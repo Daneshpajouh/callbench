@@ -24,8 +24,9 @@ Acceptance criteria:
   numbers moved, with the reason in the PR description.
 * `profiling_table` fails when every `max_rss` value is NA (action item from
   the macOS benchmark postmortem).
-* FreeBayes run-to-run indel difference (one record) explained, starting with
-  fastp at one thread.
+* FreeBayes QUAL instability on homopolymer indels (cause recorded in
+  `docs/validation.md`): repeat each chunk ten times to measure how often it
+  happens, and report it upstream with the BAM slice.
 * Per-rule tests from `--generate-unit-tests` kept under 5 MB and 60 s.
 
 ## M2 (v1.2.0): HG001, HG003 and HG004 cohort run

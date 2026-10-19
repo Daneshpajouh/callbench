@@ -122,9 +122,9 @@ subfolders LowComplexity, SegmentalDuplications, Mappability and Union.
 | --- | --- | --- |
 | clinvar.vcf.gz (release 2026-10-11) | 200,437,060 | 05d9481dd7217cc4df15803362d4a4c9eae5875b27b1750867d6bfd2643b3d10 |
 
-This copy was fetched on 2026-10-19 by another of the author's projects into
-the shared folder `/Volumes/MXFAST/data/portfolio/clinvar/` and is reused here
-rather than downloaded again. Its MD5 (`0f3a1a5e84252386033d5fcab1bf1f6a`)
+This is a local copy fetched on 2026-10-19 and reused rather than downloaded
+again; `config.yaml` expects it at `resources/full/clinvar/clinvar.vcf.gz`.
+Its MD5 (`0f3a1a5e84252386033d5fcab1bf1f6a`)
 matches the `.md5` file NCBI publishes beside it, which names
 `clinvar_20261011.vcf.gz`. ClinVar is public domain data from NCBI; its
 source is `https://ftp.ncbi.nlm.nih.gov/pub/clinvar/vcf_GRCh38/clinvar.vcf.gz`.

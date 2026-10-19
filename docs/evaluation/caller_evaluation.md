@@ -60,6 +60,10 @@ Observed while building v1.0.0 (details in `docs/operations/runbook.md`):
 * FreeBayes 1.3.10 on bioconda is built against htslib 1.21 and cannot share
   an environment with bcftools 1.23.1. The solver failure appeared only when
   the run reached the calling rules. bcftools has no such constraint.
+* FreeBayes 1.3.10 is not fully deterministic: on the same BAM and chunk,
+  one homopolymer deletion (chr17:43,430,368) got QUAL 4.9e-06 in one run
+  and 47.8 in another, so it crossed the `QUAL>=20` filter one way or the
+  other. bcftools gave identical output in every run.
 * FreeBayes writes complex alleles (MNPs, combined SNV and indel blocks) that
   must be split with `bcftools norm --atomize` before comparison; without it
   the same variant can be scored as both a false positive and a false

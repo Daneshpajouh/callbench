@@ -6,6 +6,18 @@ schema is MAJOR, a new caller, rule or report section is MINOR, a fix is PATCH.
 
 ## [Unreleased]
 
+## [1.0.1] - 2026-10-19
+
+### Fixed
+
+* `docs/data_sources.md` no longer names a path on the build machine.
+
+### Documented
+
+* Cause of the one-record FreeBayes indel difference between runs: FreeBayes
+  gave one homopolymer deletion QUAL 4.9e-06 in one run and 47.8 in another
+  on the same BAM.
+
 ### Changed
 
 * bcftools 1.23.1 to 1.24 in `workflow/envs/bcftools.yaml`; accuracy identical

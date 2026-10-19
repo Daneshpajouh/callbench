@@ -10,7 +10,9 @@ here comes from the files named next to it; nothing was typed in by hand.
 * Software from the pinned conda environments in `workflow/envs/`, all
   native osx-arm64 builds from bioconda and conda-forge: fastp 1.4.0,
   bwa 0.7.19, samtools 1.23.1, mosdepth 0.3.14, bcftools 1.23.1 (1.21 in the
-  FreeBayes environment), FreeBayes 1.3.10, RTG Tools 3.13.
+  FreeBayes environment), FreeBayes 1.3.10, RTG Tools 3.13. From v1.0.1 the bcftools
+  environment pins 1.24; the rerun gave identical accuracy
+  (`docs/changes/2026-10-19-bcftools-1.24.md`).
 * Command:
 
   ```
@@ -82,17 +84,21 @@ Reading the table:
 
 ## Run-to-run reproducibility
 
-Two complete runs on the same inputs and software (the clean `--forceall` run
-above, and an earlier run started at 11:51 the same day that reused the
-alignment) gave identical QC, identical bcftools counts in every stratum and
-identical FreeBayes SNV counts. FreeBayes indel counts differed by one record
-in low-complexity sequence: 596 against 597 true positives, F1 0.9302 against
-0.9318. The tables above are from the clean run. The cause is not isolated
-yet; fastp with 4 threads does not guarantee output read order, and a
-different order can change how bwa places reads with equal-scoring
-alignments, so the first experiment is fastp with one thread (ROADMAP M1).
-Treat F1 differences below about 0.002 between callers or versions as noise
-until that is settled.
+Three complete runs on the same inputs gave identical QC, identical bcftools
+counts in every stratum and identical FreeBayes SNV counts. FreeBayes indel
+counts differed by one record in low-complexity sequence: 596 true positives
+(F1 0.9302) in a run started at 11:51 Pacific, 597 (F1 0.9318) in the clean
+run reported above and in the bcftools 1.24 run.
+
+Cause, found at 12:43: FreeBayes 1.3.10 itself. Running it twice on the same
+BAM and the same 500 kb chunk (chr17:43,050,000-43,550,000) gave identical
+records except one, a deletion of one T from a 19 bp homopolymer at
+chr17:43,430,368, whose QUAL was 4.9e-06 in one run and 47.8 in the other.
+With the `QUAL>=20` filter that record is dropped or kept. The other seven
+chunks were byte-identical between the two runs. The input BAM, fastp output
+order (checked: two 4-thread fastp runs gave identical files) and chunk
+boundaries are not involved. Treat F1 differences below about 0.002 between
+FreeBayes runs as noise; bcftools showed no such variation.
 
 ## Limits of this validation
 

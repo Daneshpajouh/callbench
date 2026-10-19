@@ -1,0 +1,34 @@
+name: Image test
+
+# Runs the integration test inside a published image, the way a cluster job without
+# network would: tools from the image, snakemake added in a venv on its Python.
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Image tag to test, for example v1.0.2
+        required: true
+
+jobs:
+  integration:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.tag }}
+      - name: Integration test inside ghcr.io/daneshpajouh/callbench:${{ inputs.tag }}
+        run: |
+          docker run --rm -v "$PWD:/work" -w /work "ghcr.io/daneshpajouh/callbench:${{ inputs.tag }}" bash -c '
+            set -euo pipefail
+            py=""
+            for d in /conda-envs/*/; do
+              if "${d}bin/python3" -c "import pandas, matplotlib" 2>/dev/null; then py="$d"; break; fi
+            done
+            "${py}bin/python3" -m venv --system-site-packages /tmp/venv
+            /tmp/venv/bin/pip install --quiet snakemake==9.27.0
+            export PATH="/tmp/venv/bin:$(printf "%s:" /conda-envs/*/bin)$PATH"
+            snakemake --directory .tests/integration --cores 4 \
+              --resources mem_mb=6000 --default-resources mem_mb=1000 runtime=10 \
+              --retries 1 --show-failed-logs
+            python3 tools/check_accuracy.py .tests/integration/results/report/accuracy.tsv .tests/expected_accuracy.tsv
+          '

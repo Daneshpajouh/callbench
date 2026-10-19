@@ -49,7 +49,23 @@ bwa mem's 1,208 MB peak is mostly that index plus read batches of
 
 ### Scaling with region size
 
-SCALING_TABLE
+Same pipeline on the bundled slice (`profiles/test`, 2 cores, run of
+2026-10-19 12:04 with `--forceall --notemp`) and on the full windows:
+
+| Quantity | Test slice | Full windows | Ratio |
+| --- | --- | --- | --- |
+| Evaluation intervals | 180 kb | 3.8 Mb | 21x |
+| Reads | 39,712 | 850,492 | 21x |
+| fastp wall | 2.9 s | 27.7 s | 9.6x |
+| bwa mem wall | 1.2 s | 19.0 s | 16x |
+| call_bcftools wall, summed | 2.6 s (4 chunks) | 20.1 s (8 chunks) | 7.7x |
+| call_freebayes wall, summed | 2.2 s (4 chunks) | 27.3 s (8 chunks) | 12x |
+| End-to-end wall | 29.4 s | 212.3 s (56 s without bwa index) | |
+
+At this size fixed costs (process start, conda activation, index loading)
+are a large share of each job, so time grows more slowly than reads; the
+ratios approach the read ratio as jobs get longer. The test slice also uses a
+200 kb reference, so its bwa index takes 0.4 s against 155.9 s.
 
 ## Part 2: projection to hundreds of whole genomes (not measured)
 

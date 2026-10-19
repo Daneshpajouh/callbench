@@ -40,7 +40,7 @@ side.
 `docs/evaluation/caller_evaluation.md`. These numbers describe two 2 Mb windows
 picked for their genes, not the whole genome.
 
-## Quick start (about 5 minutes, bundled test data)
+## Quick start (bundled test data)
 
 Needs Python 3.12 or later and conda 24.7.1 or later on `PATH`.
 
@@ -52,11 +52,19 @@ python3 -m venv .venv
 make test-workflow
 ```
 
-`make test-workflow` builds the conda environments on first use, then runs
-the whole pipeline on a 200 kb slice of chr17 around BRCA1 (19,856 HG002
-read pairs, 6 MB in `.tests/data/`). Results land in
-`.tests/integration/results/`; the accuracy table is
-`.tests/integration/results/report/accuracy.tsv`.
+This runs every rule on a 200 kb slice of chr17 around BRCA1 (19,856 HG002
+read pairs, 6.2 MB in `.tests/integration/data/`) and then compares the
+accuracy table with `.tests/expected_accuracy.tsv`. On the build machine the
+first run took 102 s, most of it building eight conda environments; later runs
+took 29 to 48 s. The last lines of a passing run:
+
+```
+44 of 44 steps (100%) done
+run summary written to results/run/summary.json
+```
+
+Results are in `.tests/integration/results/`; `report/accuracy.tsv` is the
+accuracy table.
 
 ## Running on real data
 
@@ -70,6 +78,20 @@ On a Slurm cluster, set `slurm_account` and `slurm_partition` in
 `profiles/slurm/config.v8+.yaml` and run
 `.venv/bin/snakemake --profile profiles/slurm`. The step-by-step procedure,
 including checks before and after a run, is `docs/sop.md`.
+
+## Containers
+
+`Dockerfile` is the output of `snakemake --containerize` with the base image
+pinned by digest: one prebuilt conda environment per rule. It was built
+locally on 2026-10-19 for linux/amd64 (`docker build --platform linux/amd64
+-t germline-benchmark-smk:1.0.0 .`, 3 min 15 s under emulation, 1.05 GB), and
+the tools in it were run (`bcftools 1.21` and `1.23.1`, `freebayes v1.3.10`,
+`RTG Tools 3.13`, `fastp 1.4.0`, `mosdepth 0.3.14`, `minimap2 2.31`). The
+release workflow publishes it to `ghcr.io/daneshpajouh/germline-benchmark-smk`.
+On a Slurm cluster with Apptainer, add
+`containerized: "docker://ghcr.io/daneshpajouh/germline-benchmark-smk:v1.0.0"`
+to the Snakefile and run with `--sdm conda apptainer`. The test profile has
+not yet been run inside the container; it has run with conda on macOS.
 
 ## How it works
 

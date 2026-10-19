@@ -1,7 +1,7 @@
 # Data sources
 
 All inputs are public. Nothing under `resources/full/` is committed; the
-bundled test data in `.tests/data/` (about 4 MB) is derived from the files
+bundled test data in `.tests/integration/data/` (about 4 MB) is derived from the files
 below by `tools/make_test_data.sh`.
 
 ## Where the files come from, and why that host

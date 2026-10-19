@@ -54,8 +54,8 @@ Acceptance criteria:
 
 ## M4 (v2.0.0): somatic track on SEQC2 HCC1395
 
-As a cancer genomics centre, I want the same benchmarking discipline for
-tumour and normal pairs, so that somatic callers are chosen on measured
+As an analyst who also runs tumour and normal pairs, I want the same
+benchmarking for somatic calls, so that somatic callers are chosen on measured
 accuracy.
 
 Acceptance criteria:
@@ -73,7 +73,7 @@ Acceptance criteria:
 
 As a reporting team, I want ClinVar-annotated germline calls in the shape of
 the public IPR germline upload schema
-(`bcgsc/pori_ipr_api`, `app/schemas/germlineSmallMutation/upload.js`), so
+(`pori_ipr_api` repository, `app/schemas/germlineSmallMutation/upload.js`), so
 that the output can be loaded without a hand-written converter.
 
 Acceptance criteria:

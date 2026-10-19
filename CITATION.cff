@@ -1,6 +1,6 @@
 cff-version: 1.2.0
 message: If you use this workflow, please cite it using the metadata in this file.
-title: germline-benchmark-smk
+title: callbench
 type: software
 authors:
   - family-names: Daneshpajouh
@@ -8,7 +8,7 @@ authors:
 version: 1.0.1
 date-released: 2026-10-19
 license: Apache-2.0
-repository-code: "https://github.com/Daneshpajouh/germline-benchmark-smk"
+repository-code: "https://github.com/Daneshpajouh/callbench"
 abstract: >-
   A Snakemake 9 workflow that calls germline small variants from short reads
   with bcftools and FreeBayes, benchmarks the calls against the Genome in a

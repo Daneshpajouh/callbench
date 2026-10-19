@@ -8,7 +8,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        A caller is added when it meets the output contract below and the evidence shows how it compares with the current default caller on HG002. Read the [caller evaluation guide](https://github.com/Daneshpajouh/germline-benchmark-smk/blob/main/docs/evaluation/caller_evaluation.md) before you fill this in.
+        A caller is added when it meets the output contract below and the evidence shows how it compares with the current default caller on HG002. Read the [caller evaluation guide](https://github.com/Daneshpajouh/callbench/blob/main/docs/evaluation/caller_evaluation.md) before you fill this in.
 
         Adding a caller is a MINOR release.
   - type: input

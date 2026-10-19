@@ -1,6 +1,6 @@
 # Contributing
 
-germline-benchmark-smk is a Snakemake workflow that calls germline small variants from short reads with bcftools and FreeBayes, and benchmarks the calls against the Genome in a Bottle HG002 v4.2.1 truth set with RTG vcfeval. This file explains how to set up a development environment, what a change must pass before review, how to add a caller, and how versions are numbered.
+callbench is a Snakemake workflow that calls germline small variants from short reads with bcftools and FreeBayes, and benchmarks the calls against the Genome in a Bottle HG002 v4.2.1 truth set with RTG vcfeval. This file explains how to set up a development environment, what a change must pass before review, how to add a caller, and how versions are numbered.
 
 For anything larger than a small fix, open an issue first. The issue forms (bug report, feature request, new caller) ask for the details a reviewer needs, and they let us agree on the effect on the output contract before you write code.
 

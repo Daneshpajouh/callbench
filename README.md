@@ -1,4 +1,4 @@
-# germline-benchmark-smk
+# callbench
 
 A Snakemake workflow that finds small inherited DNA variants in short-read
 sequencing data and measures how often it gets them right, using reference
@@ -45,8 +45,8 @@ picked for their genes, not the whole genome.
 Needs Python 3.12 or later and conda 24.7.1 or later on `PATH`.
 
 ```
-git clone https://github.com/Daneshpajouh/germline-benchmark-smk
-cd germline-benchmark-smk
+git clone https://github.com/Daneshpajouh/callbench
+cd callbench
 python3 -m venv .venv
 .venv/bin/pip install -r requirements-dev.txt
 make test-workflow
@@ -84,12 +84,12 @@ including checks before and after a run, is `docs/sop.md`.
 `Dockerfile` is the output of `snakemake --containerize` with the base image
 pinned by digest: one prebuilt conda environment per rule. It was built
 locally on 2026-10-19 for linux/amd64 (`docker build --platform linux/amd64
--t germline-benchmark-smk:1.0.0 .`, 3 min 15 s under emulation, 1.05 GB), and
+-t callbench:1.0.0 .`, 3 min 15 s under emulation, 1.05 GB), and
 the tools in it were run (`bcftools 1.21` and `1.23.1`, `freebayes v1.3.10`,
 `RTG Tools 3.13`, `fastp 1.4.0`, `mosdepth 0.3.14`, `minimap2 2.31`). The
-release workflow publishes it to `ghcr.io/daneshpajouh/germline-benchmark-smk`.
+release workflow publishes it to `ghcr.io/daneshpajouh/callbench`.
 On a Slurm cluster with Apptainer, add
-`containerized: "docker://ghcr.io/daneshpajouh/germline-benchmark-smk:v1.0.0"`
+`containerized: "docker://ghcr.io/daneshpajouh/callbench:v1.0.0"`
 to the Snakefile and run with `--sdm conda apptainer`. The test profile has
 not yet been run inside the container; it has run with conda on macOS.
 

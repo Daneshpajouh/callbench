@@ -29,7 +29,7 @@ Coverage from the run on 2026-10-19 on the v1.0.2 tree
 
 The same suite was run from a fresh clone in a `python:3.12-slim` Linux
 container (`pip install -r requirements-dev.txt`, then the commands above):
-332 passed and 17 skipped (the tests that call bcftools, which the image does
+360 passed and 17 skipped (the tests that call bcftools, which the image does
 not have); the workflow layer gave 2 passed and 1 skipped (the dry run, which
 needs the full-size data). The first container run failed one test: the run
 manifest called `git`, which the slim image lacks. `runlog.git_state` now

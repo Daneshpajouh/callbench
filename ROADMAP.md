@@ -12,8 +12,9 @@ and resources rather than on release notes.
 
 Acceptance criteria:
 
-* `workflow/envs/freebayes.yaml` or `bcftools.yaml` moved up two releases on
-  a `feature/` branch; nothing else changed.
+* Done on 2026-10-19 for bcftools 1.23.1 to 1.24
+  (`docs/changes/2026-10-19-bcftools-1.24.md`); repeat for FreeBayes when a
+  release after 1.3.10 appears.
 * Full-size HG002 run repeated; `accuracy.tsv` and `profiling.by_rule.tsv`
   compared with v1.0.0 in a short change record under `docs/changes/` that
   states the decision (adopt or hold) and the rollback steps (revert the env
@@ -23,6 +24,9 @@ Acceptance criteria:
   numbers moved, with the reason in the PR description.
 * `profiling_table` fails when every `max_rss` value is NA (action item from
   the macOS benchmark postmortem).
+* FreeBayes run-to-run indel difference (one record) explained, starting with
+  fastp at one thread.
+* Per-rule tests from `--generate-unit-tests` kept under 5 MB and 60 s.
 
 ## M2 (v1.2.0): HG001, HG003 and HG004 cohort run
 

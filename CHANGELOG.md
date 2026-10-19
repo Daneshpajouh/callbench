@@ -6,6 +6,12 @@ schema is MAJOR, a new caller, rule or report section is MINOR, a fix is PATCH.
 
 ## [Unreleased]
 
+### Changed
+
+* bcftools 1.23.1 to 1.24 in `workflow/envs/bcftools.yaml`; accuracy identical
+  on HG002, runtime within 0.1 s per caller. Record:
+  `docs/changes/2026-10-19-bcftools-1.24.md`.
+
 ## [1.0.0] - 2026-10-19
 
 ### Added

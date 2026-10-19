@@ -5,7 +5,7 @@ is ready for review when all four pass.
 
 | Layer | Command | Run time here | What it catches |
 | --- | --- | --- | --- |
-| Unit | `make test` | 3.3 s, 348 tests | Logic errors in the Python scripts: interval arithmetic, metric definitions, parsing of fastp, samtools, mosdepth and benchmark files, error messages |
+| Unit | `make test` | 3.7 s, 349 tests | Logic errors in the Python scripts: interval arithmetic, metric definitions, parsing of fastp, samtools, mosdepth and benchmark files, error messages |
 | Workflow static | `.venv/bin/python -m pytest -m workflow tests/workflow` | 3.2 s, 3 tests | Broken DAG (dry run of the full config), `snakemake --lint` findings, unformatted Snakefiles |
 | End to end | `make test-workflow` | 29 to 48 s warm, 102 s with first-time conda builds | Rules that do not connect, wrong tool flags, environment solver conflicts, temp files deleted too early |
 | Validation | full run, then `docs/validation.md` | 212 s | Accuracy against GIAB truth; regressions after a caller, parameter or reference change |
@@ -26,6 +26,14 @@ Coverage from the run on 2026-10-19
 (`.venv/bin/python -m pytest -q --cov=workflow/scripts --cov=tools tests/unit`):
 512 statements, 1 missed, 99%. Every script is at 100% except `runlog.py`
 (98%).
+
+The same suite was run from a fresh clone in a `python:3.12-slim` Linux
+container (`pip install -r requirements-dev.txt`, then the commands above):
+332 passed and 17 skipped (the tests that call bcftools, which the image does
+not have); the workflow layer gave 2 passed and 1 skipped (the dry run, which
+needs the full-size data). The first container run failed one test: the run
+manifest called `git`, which the slim image lacks. `runlog.git_state` now
+records no commit in that case, with a test.
 
 Writing these tests found five bugs, each fixed in the same change: an empty
 stratum BED made `bcftools view -T` fail instead of counting zero; an empty

@@ -33,7 +33,7 @@ schema is MAJOR, a new caller, rule or report section is MINOR, a fix is PATCH.
   sample on each line.
 * Dockerfile from `snakemake --containerize`, base image pinned by digest,
   and a release job that publishes it to ghcr.io.
-* 348 unit tests on hand-written fixtures, dry-run and lint tests, an
+* 349 unit tests on hand-written fixtures, dry-run and lint tests, an
   end-to-end test on a 200 kb HG002 slice and an accuracy regression check.
 * Documentation: SOP, validation report, testing, logging, data sources,
   caller evaluation memo, capacity projection, code walk-through, runbook,

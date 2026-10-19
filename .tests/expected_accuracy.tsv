@@ -1,0 +1,25 @@
+sample	caller	stratum	type	tp_base	fn	tp_call	fp	recall	precision	f1
+HG002	bcftools	all	SNV	55	0	55	0	1.0	1.0	1.0
+HG002	bcftools	all	INDEL	15	0	15	0	1.0	1.0	1.0
+HG002	bcftools	low_complexity	SNV	3	0	3	0	1.0	1.0	1.0
+HG002	bcftools	low_complexity	INDEL	10	0	10	0	1.0	1.0	1.0
+HG002	bcftools	segdups	SNV	2	0	2	0	1.0	1.0	1.0
+HG002	bcftools	segdups	INDEL	0	0	0	0			
+HG002	bcftools	low_mappability	SNV	0	0	0	0			
+HG002	bcftools	low_mappability	INDEL	0	0	0	0			
+HG002	bcftools	all_difficult	SNV	7	0	7	0	1.0	1.0	1.0
+HG002	bcftools	all_difficult	INDEL	10	0	10	0	1.0	1.0	1.0
+HG002	bcftools	not_difficult	SNV	48	0	48	0	1.0	1.0	1.0
+HG002	bcftools	not_difficult	INDEL	5	0	5	0	1.0	1.0	1.0
+HG002	freebayes	all	SNV	55	0	55	0	1.0	1.0	1.0
+HG002	freebayes	all	INDEL	15	0	15	0	1.0	1.0	1.0
+HG002	freebayes	low_complexity	SNV	3	0	3	0	1.0	1.0	1.0
+HG002	freebayes	low_complexity	INDEL	10	0	10	0	1.0	1.0	1.0
+HG002	freebayes	segdups	SNV	2	0	2	0	1.0	1.0	1.0
+HG002	freebayes	segdups	INDEL	0	0	0	0			
+HG002	freebayes	low_mappability	SNV	0	0	0	0			
+HG002	freebayes	low_mappability	INDEL	0	0	0	0			
+HG002	freebayes	all_difficult	SNV	7	0	7	0	1.0	1.0	1.0
+HG002	freebayes	all_difficult	INDEL	10	0	10	0	1.0	1.0	1.0
+HG002	freebayes	not_difficult	SNV	48	0	48	0	1.0	1.0	1.0
+HG002	freebayes	not_difficult	INDEL	5	0	5	0	1.0	1.0	1.0

@@ -55,13 +55,16 @@ def scatter_chunks(wildcards):
     return sorted(glob_wildcards(f"{outdir}/{{chunk}}.bed").chunk)
 
 
-def gathered_chunk_vcfs(wildcards):
-    return expand(
-        "results/calls/{sample}/{caller}/chunks/{chunk}.vcf.gz",
-        sample=wildcards.sample,
-        caller=wildcards.caller,
-        chunk=scatter_chunks(wildcards),
+def gathered_chunks(wildcards):
+    # The .tbi files are listed as inputs too: they are temp() outputs of the
+    # calling rules, and a temp file that no job declares as input is deleted
+    # as soon as it is written.
+    chunks = scatter_chunks(wildcards)
+    pattern = "results/calls/{sample}/{caller}/chunks/{chunk}.vcf.gz"
+    vcfs = expand(
+        pattern, sample=wildcards.sample, caller=wildcards.caller, chunk=chunks
     )
+    return {"vcfs": vcfs, "tbis": [f"{v}.tbi" for v in vcfs]}
 
 
 # ------------------------------------------------------------- resource functions

@@ -1,0 +1,44 @@
+# Bundled test: HG002 reads on a 200 kb slice of chr17 around BRCA1, positions
+# shifted by -42,950,000 (see tools/make_test_data.sh). Runs from
+# .tests/integration, so paths are relative to that directory.
+samples: config/samples.tsv
+
+reference:
+  fasta: ../data/genome.fa
+  build: GRCh38
+
+regions: ../data/regions.bed
+
+aligner: bwa
+
+callers:
+  - bcftools
+  - freebayes
+
+scatter:
+  chunk_size: 50000
+
+params:
+  fastp: "--detect_adapter_for_pe --length_required 50"
+  bwa: "-K 100000000 -Y"
+  minimap2: ""
+  bcftools_mpileup: "-a FORMAT/AD,FORMAT/DP -q 20 -Q 20 --max-depth 500"
+  bcftools_call: ""
+  freebayes: "--min-mapping-quality 20 --min-base-quality 20 --min-alternate-fraction 0.2"
+  vcfeval: "--ref-overlap"
+  mosdepth: "--no-per-base"
+
+filters:
+  bcftools: "QUAL>=20"
+  freebayes: "QUAL>=20"
+
+evaluation:
+  stratifications:
+    low_complexity: ../data/GRCh38_AllTandemRepeatsandHomopolymers_slop5.bed
+    segdups: ../data/GRCh38_segdups.bed
+    low_mappability: ../data/GRCh38_lowmappabilityall.bed
+    all_difficult: ../data/GRCh38_alldifficultregions.bed
+    not_difficult: ../data/GRCh38_notinalldifficultregions.bed
+
+clinvar:
+  vcf: ../data/clinvar.vcf.gz

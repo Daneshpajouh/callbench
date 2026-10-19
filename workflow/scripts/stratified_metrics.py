@@ -7,6 +7,7 @@ how hap.py and the GA4GH benchmarking definitions count them. A record is
 assigned to a stratum when its POS falls in the stratum BED (bcftools -T).
 """
 
+import os
 import subprocess
 from dataclasses import dataclass
 from typing import Any
@@ -40,6 +41,10 @@ class Counts:
 
 
 def count_records(vcf: str, vtype: str, bed: str | None) -> int:
+    # bcftools exits with an error on an empty targets file, but a stratum that does
+    # not overlap the evaluation regions is a valid result: zero records.
+    if bed is not None and os.path.getsize(bed) == 0:
+        return 0
     cmd = ["bcftools", "view", "-H", "-v", vtype]
     if bed is not None:
         cmd += ["-T", bed]

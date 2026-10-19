@@ -17,7 +17,13 @@ def f1_figure(acc: pd.DataFrame, out: str) -> None:
     for ax, vtype in zip(axes, types, strict=True):
         sub = acc[acc["type"] == vtype]
         pivot = sub.pivot_table(index="stratum", columns="caller", values="f1", aggfunc="mean")
-        pivot.plot.bar(ax=ax, rot=30)
+        if pivot.empty:
+            # pivot_table drops all-NA columns, and pandas refuses to draw an empty
+            # frame. A panel with no F1 values (no indels in a small slice) still
+            # needs to render so the report build does not fail.
+            ax.text(0.5, 0.5, "no F1 values", ha="center", va="center", transform=ax.transAxes)
+        else:
+            pivot.plot.bar(ax=ax, rot=30)
         ax.set_title(f"{vtype} F1 (mean over samples)")
         ax.set_ylim(0, 1)
         ax.set_xlabel("")

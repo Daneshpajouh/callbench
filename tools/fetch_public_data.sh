@@ -13,9 +13,14 @@
 # Snakemake DAG.
 #
 # Usage: tools/fetch_public_data.sh [DATA_DIR]
+# DATA_DIR defaults to $DATA_DIR from the environment, then resources/full,
+# which is where config/config.yaml looks.
 set -euo pipefail
 
-DATA_DIR=${1:-/Volumes/MXFAST/data/portfolio/germline-benchmark-smk}
+DATA_DIR=${1:-${DATA_DIR:-resources/full}}
+mkdir -p "$DATA_DIR"
+# Absolute, because the script changes directory before writing outputs.
+DATA_DIR=$(cd "$DATA_DIR" && pwd)
 GIAB=https://giab.s3.amazonaws.com
 SEED=42
 # Two 2 Mb windows around the hereditary breast and ovarian cancer genes.

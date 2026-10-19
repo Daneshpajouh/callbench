@@ -40,7 +40,9 @@ def per_rule_summary(df: pd.DataFrame) -> pd.DataFrame:
             "jobs": g.size(),
             "wall_s_total": g["s"].sum().round(1),
             "wall_s_max": g["s"].max().round(1),
-            "cpu_s_total": g["cpu_time"].sum().round(1),
+            # min_count=1 keeps NA when no job reported CPU time (macOS without the
+            # psutil shim); a plain sum would report 0.0 s for work that ran.
+            "cpu_s_total": g["cpu_time"].sum(min_count=1).round(1),
             "max_rss_mb_peak": g["max_rss"].max().round(1),
         }
     ).reset_index()

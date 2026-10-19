@@ -78,7 +78,7 @@ rule call_freebayes:
 
 rule gather_calls:
     input:
-        gathered_chunk_vcfs,
+        unpack(gathered_chunks),
     output:
         vcf="results/calls/{sample}/{caller}.raw.vcf.gz",
         tbi="results/calls/{sample}/{caller}.raw.vcf.gz.tbi",
@@ -94,7 +94,7 @@ rule gather_calls:
         # Chunks do not overlap, but a deletion that starts in one chunk can be
         # reported by both neighbours; --allow-overlaps plus --remove-duplicates
         # keeps one copy.
-        "(bcftools concat --allow-overlaps --remove-duplicates -Ou {input}"
+        "(bcftools concat --allow-overlaps --remove-duplicates -Ou {input.vcfs}"
         " | bcftools sort -Oz -o {output.vcf}"
         " && bcftools index -t {output.vcf}) 2> {log}"
 

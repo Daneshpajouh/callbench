@@ -14,7 +14,8 @@ def summarise(paths: list[str]) -> pd.DataFrame:
         sample = Path(p).parent.name
         df["sample"], df["caller"] = sample, caller
         frames.append(df)
-    allcalls = pd.concat(frames, ignore_index=True)
+    # pd.concat raises on an empty list; no input tables means no calls.
+    allcalls = pd.concat(frames, ignore_index=True) if frames else pd.DataFrame()
     if allcalls.empty:
         return pd.DataFrame(columns=["sample", "caller", "clnsig", "calls"])
     return (

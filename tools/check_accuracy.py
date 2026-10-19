@@ -26,7 +26,9 @@ def compare(observed: pd.DataFrame, expected: pd.DataFrame, tolerance: float) ->
             continue
         if pd.isna(f1_obs):
             problems.append(f"{label}: missing or NA in observed table")
-        elif f1_obs < f1_exp - tolerance:
+        # The slack keeps a drop of exactly --tolerance from failing on float rounding:
+        # 0.5006 - 0.005 evaluates to 0.49560000000000004, so 0.4956 would be flagged.
+        elif f1_obs < f1_exp - tolerance - 1e-9:
             problems.append(f"{label}: F1 {f1_obs:.4f} < expected {f1_exp:.4f}")
         elif abs(f1_obs - f1_exp) > 1e-9:
             print(f"{label}: F1 changed {f1_exp:.4f} -> {f1_obs:.4f} (within tolerance)")

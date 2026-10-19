@@ -122,15 +122,27 @@ cluster. GATK and DeepVariant publish linux/amd64 images.
 
 ## Recommendation
 
-Default caller: bcftools, for three measured reasons: higher SNV F1 overall
-and outside difficult regions (0.9995 against 0.9978), far fewer missed easy
-indels (2 against 9 of 196), and lower cost per chunk (20.1 s against 27.3 s summed wall time, 185 MB against 363 MB peak). It also has the more active
-release history and no htslib pin conflict.
+Default caller: bcftools, on SNV accuracy and cost. Outside difficult
+regions it makes 3 SNV errors against 13 in 2,995 (SNV F1 0.9995 against
+0.9978; two-sided exact test on the 16 errors, p about 0.02), and it costs
+less per chunk (20.1 s against 27.3 s summed wall time, 185 MB against 363 MB
+peak). It also has the more active release history and no htslib pin
+conflict.
+
+The indel difference outside difficult regions is suggestive only: bcftools
+misses 2 of 196 easy indels and FreeBayes 9 (two-sided Fisher exact test,
+p about 0.06). Both callers saw the same 196 indels in one sample, so the
+right test is a paired one on the per-variant table; confirm it in M2.
 
 Keep FreeBayes as a second caller in the benchmark, not as the default: its
 indel precision in tandem repeats and homopolymers (23 false positives against
-47) is the one place it is clearly better, and a later milestone can test a
-consensus or a repeat-aware filter using that.
+47; two-sided exact test on the 70 false positives, p about 0.006) is the one
+place it is clearly better, and a later milestone can test a consensus or a
+repeat-aware filter using that.
+
+All three tests compare counts at the single `QUAL>=20` cut, one run, one
+sample; they say nothing about other cuts (see the ROC comparison in
+[validation](../validation.md)).
 
 This recommendation holds for these two windows at about 29x. Confirm on the
 four-sample cohort (M2) and against GATK and DeepVariant (M3) before using it

@@ -37,7 +37,7 @@ side.
 3,412 truth SNVs and 657 truth indels inside the GIAB confident regions; about
 29x mean depth. Per-stratum numbers, runtime and memory are in
 `docs/validation.md`; the deployment recommendation is in
-`docs/evaluation/caller_evaluation.md`. These numbers describe two 2 Mb windows
+`docs/evaluation/caller_evaluation.md`. These numbers describe two 1.9 Mb windows
 picked for their genes, not the whole genome.
 
 ## Quick start (bundled test data)
@@ -124,7 +124,6 @@ before a job is planned.
 | `tools/` | data fetch, test-data builder, accuracy regression check, macOS benchmark wrapper |
 | `tests/` | pytest unit tests for the scripts and workflow-level tests |
 | `.tests/` | bundled test data and the integration config |
-| `docs/` | SOP, validation, testing, data sources, caller evaluation, capacity, walk-through, operations |
 
 ## Documentation
 

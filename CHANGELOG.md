@@ -28,7 +28,13 @@ schema is MAJOR, a new caller, rule or report section is MINOR, a fix is PATCH.
   on AWS Open Data, with a SHA-256 manifest) and `tools/make_test_data.sh`.
 * `tools/snakemake_macos.py` so the benchmark directive records memory and CPU
   on macOS.
-* Unit tests for every script, an end-to-end test on a 200 kb HG002 slice and
-  an accuracy regression check.
-* Documentation: SOP, validation report, data sources, caller evaluation
-  memo, capacity projection, code walk-through, runbook, one postmortem.
+* Run manifest (onstart) and run summary (onsuccess, onerror) under
+  `results/run/`, and one logging setup for the Python scripts with rule and
+  sample on each line.
+* Dockerfile from `snakemake --containerize`, base image pinned by digest,
+  and a release job that publishes it to ghcr.io.
+* 348 unit tests on hand-written fixtures, dry-run and lint tests, an
+  end-to-end test on a 200 kb HG002 slice and an accuracy regression check.
+* Documentation: SOP, validation report, testing, logging, data sources,
+  caller evaluation memo, capacity projection, code walk-through, runbook,
+  one postmortem.

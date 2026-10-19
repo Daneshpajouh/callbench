@@ -50,7 +50,7 @@ but `gather_calls` only declared the `.vcf.gz` files as input. Snakemake
 deletes a temp file once no pending job lists it as input, so each index was
 removed seconds after it was written.
 Fix: `gathered_chunks()` in `common.smk` returns both the VCFs and their
-indexes, and the rule uses `unpack()`.
+indexes, and `gather_calls` declares both as named inputs.
 
 ### Python script fails with "from __future__ imports must occur at the beginning of the file"
 

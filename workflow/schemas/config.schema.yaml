@@ -38,6 +38,13 @@ properties:
         type: integer
         minimum: 10000
         description: Maximum chunk length in bp for scattered calling.
+      call_padding:
+        type: integer
+        minimum: 0
+        default: 1000
+        description: >-
+          Bases added on each side of a chunk for FreeBayes calling; records
+          are then kept only when their POS lies in the unpadded chunk.
     required: [chunk_size]
   params:
     type: object

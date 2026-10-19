@@ -70,8 +70,16 @@ rule call_freebayes:
         runtime=runtime_min(20, per_gb=120),
     params:
         extra=config["params"]["freebayes"],
+        pad=config["scatter"].get("call_padding", 1000),
+        pad_awk=workflow.source_path("../scripts/pad_region.awk"),
     shell:
-        "(freebayes -f {input.ref} -t {input.bed} {params.extra} {input.bam}"
+        # FreeBayes calls from haplotype windows, so a variant near a chunk edge
+        # would be called from partial context. Call on the chunk padded on both
+        # sides, then keep only records whose POS lies in the unpadded chunk
+        # (bcftools -T matches on POS), so each record comes from one chunk.
+        "(region=$(awk -v pad={params.pad} -f {params.pad_awk} {input.fai} {input.bed})"
+        " && freebayes -f {input.ref} -r $region {params.extra} {input.bam}"
+        " | bcftools view -T {input.bed} -Ou"
         " | bcftools sort -Oz -o {output.vcf}"
         " && bcftools index -t {output.vcf}) 2> {log}"
 

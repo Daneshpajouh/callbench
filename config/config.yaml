@@ -19,6 +19,7 @@ callers:
 
 scatter:
   chunk_size: 500000
+  call_padding: 1000
 
 params:
   fastp: "--detect_adapter_for_pe --length_required 50"

@@ -29,6 +29,14 @@ def test_missing_row_is_a_regression() -> None:
     assert compare(_table("NA"), _table("0.9900"), 0.005)
 
 
+def test_missing_row_with_no_expected_f1_is_a_regression() -> None:
+    # An empty stratum (no truth variants, no calls) has no F1; its row must still be there.
+    empty = _table("NA").assign(stratum="lowmappability")
+    expected = pd.concat([_table("0.9900"), empty], ignore_index=True)
+    problems = compare(_table("0.9900"), expected, 0.005)
+    assert problems == ["HG002/bcftools/lowmappability/SNV: missing from observed table"]
+
+
 @pytest.mark.parametrize(
     ("observed", "expected", "tolerance", "regressions"),
     [

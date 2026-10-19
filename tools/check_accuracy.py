@@ -33,10 +33,14 @@ def _truth(row: pd.Series, suffix: str) -> int | None:
 
 
 def compare(observed: pd.DataFrame, expected: pd.DataFrame, tolerance: float) -> list[str]:
-    merged = expected.merge(observed, on=KEY, how="left", suffixes=("_exp", "_obs"))
+    merged = expected.merge(observed, on=KEY, how="left", suffixes=("_exp", "_obs"), indicator=True)
     problems = []
     for _, r in merged.iterrows():
         label = "/".join(str(r[k]) for k in KEY)
+        # Checked first: an expected row with no F1 would otherwise be skipped below.
+        if r["_merge"] == "left_only":
+            problems.append(f"{label}: missing from observed table")
+            continue
         f1_exp = pd.to_numeric(r["f1_exp"], errors="coerce")
         f1_obs = pd.to_numeric(r["f1_obs"], errors="coerce")
         truth_exp, truth_obs = _truth(r, "_exp"), _truth(r, "_obs")

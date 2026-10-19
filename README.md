@@ -89,12 +89,14 @@ test (HG002 reads on a 200 kb slice of chr17, both callers, vcfeval and the
 accuracy check) ran inside that image with no network twice: on a workstation,
 and as an Apptainer image on a Slurm compute node, 44 of 44 steps each time
 with the same accuracy table. The 1.0.2 code passed the same test in that
-image. The current Dockerfile pins bcftools 1.24 and has not been built yet.
+image.
 
-The release workflow publishes the image to `ghcr.io/daneshpajouh/callbench`
-when a version is tagged. On a Slurm cluster with Apptainer, add a
-`containerized:` line with that image to the Snakefile and run with
-`--sdm conda apptainer`.
+The release workflow builds the image from the current Dockerfile (bcftools
+1.24) and publishes it when a version is tagged:
+`ghcr.io/daneshpajouh/callbench:v1.0.2`. The integration test has not been run
+inside that image yet. On a Slurm cluster with Apptainer, add
+`containerized: "docker://ghcr.io/daneshpajouh/callbench:v1.0.2"` to the
+Snakefile and run with `--sdm conda apptainer`.
 
 ## How it works
 

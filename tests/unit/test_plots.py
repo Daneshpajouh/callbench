@@ -5,6 +5,7 @@ from types import SimpleNamespace
 import matplotlib.pyplot as plt
 import pandas as pd
 import pytest
+from matplotlib.patches import Rectangle
 from plots import f1_figure, runtime_figure
 from smk_stub import DATA, make_smk, run_as_rule_script
 
@@ -133,3 +134,31 @@ def test_rule_script_names_an_empty_input_table(tmp_path: Path) -> None:
     with pytest.raises(ValueError, match=r"empty\.tsv: empty file"):
         run_as_rule_script("plots", smk)
     assert "ERROR rule=plots sample=- ValueError: " in (tmp_path / "plots.log").read_text()
+
+
+def test_f1_figure_draws_the_given_values(tmp_path: Path) -> None:
+    acc = _acc(
+        [
+            ("HG002", "bcftools", "all", "SNV", 0.99),
+            ("HG002", "freebayes", "all", "SNV", 0.95),
+            ("HG002", "bcftools", "all", "INDEL", 0.90),
+            ("HG002", "freebayes", "all", "INDEL", "NA"),
+        ]
+    )
+    f1_figure(acc, str(tmp_path / "f1.svg"))
+    snv, indel = plt.gcf().axes
+    assert sorted(round(p.get_height(), 4) for p in snv.patches if isinstance(p, Rectangle)) == [
+        0.95,
+        0.99,
+    ]
+    # The NA freebayes indel value is not drawn as a bar of height 0.
+    heights = [round(p.get_height(), 4) for p in indel.patches if isinstance(p, Rectangle)]
+    assert 0.9 in heights and 0.0 not in heights
+
+
+def test_runtime_figure_draws_one_bar_per_rule_in_sorted_order(tmp_path: Path) -> None:
+    by_rule = pd.DataFrame({"rule": ["call", "align", "qc"], "wall_s_total": [27.3, 120.5, 3.0]})
+    runtime_figure(by_rule, str(tmp_path / "runtime.svg"))
+    (ax,) = plt.gcf().axes
+    assert [p.get_width() for p in ax.patches if isinstance(p, Rectangle)] == [3.0, 27.3, 120.5]
+    assert [t.get_text() for t in ax.get_yticklabels()] == ["qc", "call", "align"]

@@ -47,7 +47,8 @@ def read_roc(path: str | Path) -> pd.DataFrame:
     opener = gzip.open if str(path).endswith(".gz") else open
     with opener(path, "rt") as fh:
         lines = fh.read().splitlines()
-    header = next((ln for ln in lines if ln.startswith("#score")), None)
+    # RTG Tools 3.13 writes a "#score field: QUAL" line before the column header.
+    header = next((ln for ln in lines if ln.startswith("#score\t")), None)
     if header is None:
         raise ValueError(f"{path}: no '#score' header line")
     names = header.lstrip("#").split("\t")

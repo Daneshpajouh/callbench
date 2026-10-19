@@ -21,8 +21,19 @@ ROWS = [
 ]
 
 
+# The preamble RTG Tools 3.13 writes; its "#score field" line also starts with "#score".
+PREAMBLE = [
+    "#Version RTG Tools 3.13 / Core c27844a5bb (2025-05-27), ROC output 1.2",
+    "#CL vcfeval -b truth.vcf.gz -c calls.vcf.gz -t genome.sdf --vcf-score-field QUAL -o roc",
+    "#selection: SNP (baseline rescaled)",
+    "#total baseline variants: 100",
+    "#total call variants: 128",
+    "#score field: QUAL",
+]
+
+
 def _write(path: Path, rows: list[tuple[float, int, int, int, int]], header: str = HEADER) -> Path:
-    lines = ["#Version 3.13", "#CMD line", header]
+    lines = [*PREAMBLE, header]
     lines += [f"{s}\t{tb}\t{fp}\t{tc}\t{fn}\t0\t0\t0" for s, tb, fp, tc, fn in rows]
     with gzip.open(path, "wt") as fh:
         fh.write("\n".join(lines) + "\n")
@@ -32,6 +43,7 @@ def _write(path: Path, rows: list[tuple[float, int, int, int, int]], header: str
 def test_read_roc_takes_counts_from_the_named_columns(tmp_path: Path) -> None:
     roc = read_roc(_write(tmp_path / "snp_roc.tsv.gz", ROWS))
     assert list(roc.columns) == ["score", "tp_base", "fp", "tp_call", "fn"]
+    assert roc["score"].tolist() == [60.0, 40.0, 20.0, 5.0]
     assert roc["fp"].tolist() == [0, 1, 5, 30]
     assert roc["fn"].tolist() == [50, 20, 5, 2]
 

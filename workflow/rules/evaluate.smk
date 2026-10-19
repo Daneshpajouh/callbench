@@ -110,8 +110,9 @@ rule normalise_unfiltered:
     params:
         atomize=lambda wc: "--atomize" if wc.caller == "freebayes" else "",
     shell:
-        "(bcftools view -T {input.regions} -i 'GT~\"1\"' -Ou {input.vcf}"
+        "(bcftools view -T {input.regions} -i 'GT=\"alt\"' -Ou {input.vcf}"
         " | bcftools norm -f {input.ref} -m -any {params.atomize} -Ou"
+        " | bcftools view -i 'GT=\"alt\"' -Ou"
         " | bcftools norm -d exact -Ou"
         " | bcftools sort -Oz -o {output.vcf}"
         " && bcftools index -t {output.vcf}) 2> {log}"

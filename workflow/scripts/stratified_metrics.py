@@ -38,8 +38,10 @@ class Counts:
     @property
     def f1(self) -> float | None:
         p, r = self.precision, self.recall
-        if p is None or r is None or p + r == 0:
+        if p is None or r is None:
             return None
+        if p + r == 0:
+            return 0.0
         return 2 * p * r / (p + r)
 
 

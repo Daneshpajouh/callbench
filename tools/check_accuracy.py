@@ -33,6 +33,11 @@ def _truth(row: pd.Series, suffix: str) -> int | None:
 
 
 def compare(observed: pd.DataFrame, expected: pd.DataFrame, tolerance: float) -> list[str]:
+    for name, table in (("observed", observed), ("expected", expected)):
+        dup = table[table.duplicated(KEY, keep=False)]
+        if not dup.empty:
+            labels = sorted({"/".join(str(r[k]) for k in KEY) for _, r in dup.iterrows()})
+            return [f"{label}: repeated in the {name} table" for label in labels]
     merged = expected.merge(observed, on=KEY, how="left", suffixes=("_exp", "_obs"), indicator=True)
     problems = []
     for _, r in merged.iterrows():

@@ -42,7 +42,9 @@ picked for their genes, not the whole genome.
 
 ## Quick start (bundled test data)
 
-Needs Python 3.12 or later and conda 24.7.1 or later on `PATH`.
+Needs Python 3.12 (what CI uses) and conda 24.7.1 or later on `PATH`. On
+Python 3.14, pip builds one Snakemake dependency (`immutables`) from source and
+needs a C compiler.
 
 ```
 git clone https://github.com/Daneshpajouh/callbench
@@ -73,6 +75,13 @@ make data          # region fetch of the public inputs, about 800 MB
 make run           # full run, 8 cores
 make report        # results/report.html
 ```
+
+`make data` needs `curl`, `samtools`, `bcftools`, `tabix` and `shasum` on
+`PATH`. It does not fetch ClinVar: NCBI's HTTPS host disallows
+scripted downloads in robots.txt. Before `make run`, put the GRCh38
+`clinvar.vcf.gz` and its `.tbi` from NCBI's FTP endpoint
+(`ftp://ftp.ncbi.nlm.nih.gov/pub/clinvar/vcf_GRCh38/`) in
+`resources/full/clinvar/`; `docs/data_sources.md` records the release used.
 
 On a Slurm cluster, set `slurm_account` and `slurm_partition` in
 `profiles/slurm/config.v8+.yaml` and run

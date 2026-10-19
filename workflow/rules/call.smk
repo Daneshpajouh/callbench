@@ -134,8 +134,10 @@ rule normalise:
         atomize=lambda wc: "--atomize" if wc.caller == "freebayes" else "",
         keep=lambda wc: config["filters"][wc.caller],
     shell:
-        "(bcftools view -T {input.regions} -i 'GT~\"1\" && {params.keep}' -Ou {input.vcf}"
+        "(bcftools view -T {input.regions} -i 'GT=\"alt\" && {params.keep}' -Ou {input.vcf}"
         " | bcftools norm -f {input.ref} -m -any {params.atomize} -Ou"
+        # Splitting a 0/1 record with two ALTs leaves a 0/0 record for the other allele.
+        " | bcftools view -i 'GT=\"alt\"' -Ou"
         " | bcftools norm -d exact -Ou"
         " | bcftools sort -Oz -o {output.vcf}"
         " && bcftools index -t {output.vcf}) 2> {log}"

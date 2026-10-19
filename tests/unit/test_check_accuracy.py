@@ -197,3 +197,13 @@ def test_tables_without_count_columns_are_checked_on_f1_only() -> None:
 def test_the_shipped_expected_table_passes_against_itself() -> None:
     table = pd.read_csv(ROOT / ".tests" / "expected_accuracy.tsv", sep="\t")
     assert compare(table, table, 0.005) == []
+
+
+def test_repeated_rows_are_rejected() -> None:
+    twice = pd.concat([_table("0.9900"), _table("0.9900")], ignore_index=True)
+    assert compare(twice, _table("0.9900"), 0.005) == [
+        "HG002/bcftools/all/SNV: repeated in the observed table"
+    ]
+    assert compare(_table("0.9900"), twice, 0.005) == [
+        "HG002/bcftools/all/SNV: repeated in the expected table"
+    ]

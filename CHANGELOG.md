@@ -4,6 +4,24 @@ All notable changes to this workflow. Versions follow semantic versioning as
 defined in `CONTRIBUTING.md`: a change to the output contract or the config
 schema is MAJOR, a new caller, rule or report section is MINOR, a fix is PATCH.
 
+## [Unreleased]
+
+### Fixed
+
+* The normalise rules selected calls with `GT~"1"` before splitting
+  multiallelic records, so a call using only the second ALT allele (`0/2`,
+  `2/2`) was dropped, and a split `0/1` record left a `0/0` record behind.
+  They now select `GT="alt"` before the split and again after it
+  (`tests/unit/test_genotype_filter.py`).
+* F1 is 0, not NA, when a stratum has calls and truth variants but no true
+  positives. No committed table had such a row.
+* `tools/check_accuracy.py` fails when a row is repeated in either table.
+
+### Documented
+
+* Real-data steps name the host tools `make data` needs and the manual
+  ClinVar download; the quick start names Python 3.12.
+
 ## [1.0.2] - 2026-10-19
 
 Renamed from germline-benchmark-smk to callbench. Full-size and test-profile

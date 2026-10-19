@@ -1,7 +1,7 @@
 # Validation report, v1.0.2
 
-What was run, on what, with which command, and what came out. Every number
-here comes from the files named next to it; nothing was typed in by hand.
+What was run, on what, with which command, and what came out. Each number
+comes from the output file named next to it.
 
 ## Run
 

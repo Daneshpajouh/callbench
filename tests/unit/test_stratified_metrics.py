@@ -30,7 +30,7 @@ def test_empty_stratum_gives_na_not_zero() -> None:
 
 def test_all_false_positives() -> None:
     c = Counts(tp_base=0, fn=5, tp_call=0, fp=3)
-    assert c.recall == 0 and c.precision == 0 and c.f1 is None
+    assert c.recall == 0 and c.precision == 0 and c.f1 == 0.0
 
 
 @pytest.mark.parametrize(

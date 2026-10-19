@@ -1,0 +1,19 @@
+# This file was produced by samtools stats (excerpt, hand-trimmed).
+# CHK	1a2b3c4d	5e6f7a8b	9c0d1e2f
+SN	raw total sequences:	10	# excluding supplementary and secondary reads
+SN	filtered sequences:	0
+SN	sequences:	10
+SN	is sorted:	1
+SN	1st fragments:	5
+SN	last fragments:	5
+SN	reads mapped:	9
+SN	reads mapped and paired:	8	# paired-end technology bit set + both mates mapped
+SN	reads unmapped:	1
+SN	reads properly paired:	8	# proper-pair bit set
+SN	reads duplicated:	2	# PCR or optical duplicate bit set
+SN	error rate:	1.500000e-03	# mismatches / bases mapped (cigar)
+SN	average length:	29
+SN	insert size average:	312.5
+SN	insert size standard deviation:	41.2
+FFQ	1	0	0	10
+COV	[1-1]	1	3

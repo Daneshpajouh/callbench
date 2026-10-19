@@ -16,3 +16,4 @@ report.zip
 .tests/integration/logs/
 .tests/integration/benchmarks/
 .tests/integration/.snakemake/
+.coverage

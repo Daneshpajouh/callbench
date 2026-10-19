@@ -12,7 +12,7 @@ set -euo pipefail
 
 RESULTS=${1:-results}
 DATA=${2:-resources/full}
-OUT=.tests/data
+OUT=.tests/integration/data
 CHROM=chr17
 START=42950000 # 0-based start of the slice
 END=43150000

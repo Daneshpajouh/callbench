@@ -1,0 +1,4 @@
+sample	caller	stratum	type	tp_base	fn	tp_call	fp	recall	precision	f1
+HG002	bcftools	all	SNV	90	10	88	12	0.9000	0.8800	0.8900
+HG002	bcftools	all	INDEL	0	0	0	0	NA	NA	NA
+HG002	bcftools	low_complexity	SNV	0	0	0	0	NA	NA	NA

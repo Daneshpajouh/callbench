@@ -1,0 +1,5 @@
+#chrom	start	end
+chr17	0	100	strataA
+chr17	150	300	strataB
+
+chr13	10	50	strataC

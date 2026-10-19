@@ -1,0 +1,8 @@
+##fileformat=VCFv4.2
+##contig=<ID=chr17,length=1000>
+##INFO=<ID=DP,Number=1,Type=Integer,Description="Read depth">
+##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	HG002
+chr17	100	.	A	G	50	PASS	DP=10	GT	0/1
+chr17	200	.	AT	A	50	PASS
+chr17	400	.	C	T	50	PASS	DP=3	GT	1/1

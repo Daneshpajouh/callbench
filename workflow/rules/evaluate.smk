@@ -84,3 +84,87 @@ rule stratified_metrics:
         strata=STRATA,
     script:
         "../scripts/stratified_metrics.py"
+
+
+# ROC comparison (opt-in, evaluation.roc in the config). One QUAL cut compares
+# callers at one point on two differently scaled scores; vcfeval on unfiltered
+# calls with --vcf-score-field QUAL gives each caller's whole precision and
+# recall curve. The deployed filter and accuracy.tsv are unchanged.
+
+
+rule normalise_unfiltered:
+    input:
+        vcf="results/calls/{sample}/{caller}.raw.vcf.gz",
+        ref="results/ref/genome.fa",
+        fai="results/ref/genome.fa.fai",
+        regions="results/ref/regions.bed",
+    output:
+        vcf="results/calls/{sample}/{caller}.unfiltered.vcf.gz",
+        tbi="results/calls/{sample}/{caller}.unfiltered.vcf.gz.tbi",
+    log:
+        "logs/normalise_unfiltered/{sample}.{caller}.log",
+    conda:
+        "../envs/bcftools.yaml"
+    resources:
+        mem_mb=mem_mb(500, per_gb=200),
+    params:
+        atomize=lambda wc: "--atomize" if wc.caller == "freebayes" else "",
+    shell:
+        "(bcftools view -T {input.regions} -i 'GT~\"1\"' -Ou {input.vcf}"
+        " | bcftools norm -f {input.ref} -m -any {params.atomize} -Ou"
+        " | bcftools norm -d exact -Ou"
+        " | bcftools sort -Oz -o {output.vcf}"
+        " && bcftools index -t {output.vcf}) 2> {log}"
+
+
+rule vcfeval_roc:
+    input:
+        calls="results/calls/{sample}/{caller}.unfiltered.vcf.gz",
+        calls_tbi="results/calls/{sample}/{caller}.unfiltered.vcf.gz.tbi",
+        truth=lambda wc: get_truth(wc)["vcf"],
+        bed="results/evaluation/{sample}/confident_regions.bed",
+        sdf="results/ref/genome.sdf",
+    output:
+        snp="results/evaluation/{sample}/{caller}/vcfeval_roc/snp_roc.tsv.gz",
+        non_snp="results/evaluation/{sample}/{caller}/vcfeval_roc/non_snp_roc.tsv.gz",
+    log:
+        "logs/vcfeval_roc/{sample}.{caller}.log",
+    conda:
+        "../envs/evaluation.yaml"
+    threads: 2
+    resources:
+        mem_mb=mem_mb(3000, per_gb=1000),
+    params:
+        outdir=lambda wc, output: os.path.dirname(output.snp),
+        extra=config["params"]["vcfeval"],
+    shell:
+        "rm -rf {params.outdir} && RTG_MEM=$(({resources.mem_mb} * 8 / 10))m"
+        " rtg vcfeval -b {input.truth} -c {input.calls} -t {input.sdf}"
+        " --evaluation-regions {input.bed} --threads {threads} {params.extra}"
+        " --vcf-score-field QUAL -o {params.outdir} > {log} 2>&1"
+
+
+rule roc_summary:
+    input:
+        expand(
+            "results/evaluation/{pair[0]}/{pair[1]}/vcfeval_roc/snp_roc.tsv.gz",
+            pair=evaluated_pairs(),
+        ),
+        expand(
+            "results/evaluation/{pair[0]}/{pair[1]}/vcfeval_roc/non_snp_roc.tsv.gz",
+            pair=evaluated_pairs(),
+        ),
+    output:
+        "results/report/roc_summary.tsv",
+    log:
+        "logs/roc_summary.log",
+    localrule: True
+    conda:
+        "../envs/python.yaml"
+    params:
+        samples=[s for s, _ in evaluated_pairs()],
+        callers=[c for _, c in evaluated_pairs()],
+        dirs=[f"results/evaluation/{s}/{c}/vcfeval_roc" for s, c in evaluated_pairs()],
+        target_precision=config["evaluation"].get("roc_target_precision", 0.99),
+    script:
+        "../scripts/roc_summary.py"

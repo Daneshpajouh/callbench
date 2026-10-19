@@ -82,6 +82,25 @@ Reading the table:
   indels. Ratios from 5 indels move by 0.2 for each error; do not compare
   callers on them.
 
+## Comparison across the QUAL score
+
+The tables above compare both callers at one cut, `QUAL>=20`. The two callers
+scale QUAL differently, so part of any F1 gap at one cut comes from the cut
+itself. GA4GH practice is to compare whole precision and recall curves.
+
+From v1.0.2 the full configuration sets `evaluation.roc: true`. The workflow
+then normalises the unfiltered calls, runs vcfeval with
+`--vcf-score-field QUAL`, and writes `results/report/roc_summary.tsv` with
+each caller's best F1 over all QUAL thresholds and its recall at precision
+0.99 (`evaluation.roc_target_precision`). The deployed filter and
+`accuracy.tsv` do not change.
+
+Results: not yet run. The rerun command is
+
+    snakemake --profile profiles/local results/report/roc_summary.tsv
+
+and its figures go here when it has run.
+
 ## Run-to-run reproducibility
 
 Three complete runs on the same inputs gave identical QC, identical bcftools

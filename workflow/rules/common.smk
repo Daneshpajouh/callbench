@@ -106,6 +106,8 @@ def all_targets():
         sample=SAMPLES,
         caller=CALLERS,
     )
+    if config["evaluation"].get("roc", False):
+        targets.append("results/report/roc_summary.tsv")
     return targets
 
 

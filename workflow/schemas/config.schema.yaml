@@ -73,6 +73,20 @@ properties:
         description: Stratum name to BED (plain or gzipped) path.
         additionalProperties:
           type: string
+      roc:
+        type: boolean
+        default: false
+        description: >-
+          Also run vcfeval on unfiltered calls scored by QUAL and write
+          results/report/roc_summary.tsv (best F1 and recall at a target
+          precision per caller), so callers are compared across the score and
+          not only at the deployed filter.
+      roc_target_precision:
+        type: number
+        exclusiveMinimum: 0
+        maximum: 1
+        default: 0.99
+        description: Precision at which roc_summary.tsv reports each caller's recall.
     required: [stratifications]
   clinvar:
     type: object

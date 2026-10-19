@@ -42,6 +42,9 @@ evaluation:
     low_mappability: resources/full/stratifications/GRCh38_lowmappabilityall.bed.gz
     all_difficult: resources/full/stratifications/GRCh38_alldifficultregions.bed.gz
     not_difficult: resources/full/stratifications/GRCh38_notinalldifficultregions.bed.gz
+  # Compare callers across the QUAL score as well (see docs/validation.md).
+  roc: true
+  roc_target_precision: 0.99
 
 clinvar:
   vcf: resources/full/clinvar/clinvar.vcf.gz

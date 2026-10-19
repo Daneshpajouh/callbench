@@ -60,3 +60,27 @@ jobs:
         with:
           name: ${{ github.ref_name }}
           body_path: ${{ runner.temp }}/release-notes.md
+
+  image:
+    # The Dockerfile comes from `snakemake --containerize` and holds one
+    # prebuilt conda environment per rule; on a cluster, run with
+    # `--sdm conda apptainer` and Snakemake uses these instead of solving.
+    runs-on: ubuntu-latest
+    needs: release
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          platforms: linux/amd64
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/germline-benchmark-smk:${{ github.ref_name }}

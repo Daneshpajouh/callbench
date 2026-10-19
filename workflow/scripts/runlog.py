@@ -27,12 +27,17 @@ def sha256(path: str | Path, block: int = 1 << 20) -> str:
 
 
 def git_state(repo: Path) -> dict[str, Any]:
+    """Commit and dirty flag; both None when git is absent (slim containers)."""
+
     def run(*args: str) -> str:
         return subprocess.run(
             ["git", "-C", str(repo), *args], capture_output=True, text=True, check=False
         ).stdout.strip()
 
-    commit = run("rev-parse", "HEAD")
+    try:
+        commit = run("rev-parse", "HEAD")
+    except FileNotFoundError:
+        return {"commit": None, "dirty": None}
     return {
         "commit": commit or None,
         "dirty": bool(run("status", "--porcelain")) if commit else None,

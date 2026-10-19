@@ -67,3 +67,10 @@ def test_summary_reports_status_rules_outputs_and_logs(
     assert s["per_rule"][0]["rule"] == "fastp"
     assert s["outputs"][1] == {"path": "not_made.tsv", "missing": True}
     assert s["logs"] == ["logs/fastp.log"]
+
+
+def test_git_state_without_git_on_path(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    from runlog import git_state
+
+    monkeypatch.setenv("PATH", str(tmp_path))
+    assert git_state(tmp_path) == {"commit": None, "dirty": None}

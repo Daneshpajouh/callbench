@@ -152,3 +152,40 @@ def test_script_exit_status_is_the_regression_flag(monkeypatch: pytest.MonkeyPat
     with pytest.raises(SystemExit) as info:
         runpy.run_path(str(ROOT / "tools" / "check_accuracy.py"), run_name="__main__")
     assert info.value.code == 0
+
+
+def _counts(f1: str, tp_base: int, fn: int, fp: int) -> pd.DataFrame:
+    return _table(f1).assign(tp_base=tp_base, fn=fn, tp_call=tp_base, fp=fp)
+
+
+def test_lost_truth_variants_fail_even_when_f1_is_unchanged() -> None:
+    # A wrong evaluation BED drops 5 truth variants; every call still matches, F1 stays 1.0.
+    (problem,) = compare(_counts("1.0", 50, 0, 0), _counts("1.0", 55, 0, 0), 0.005)
+    assert problem == "HG002/bcftools/all/SNV: truth count 50 != expected 55"
+
+
+def test_gained_truth_variants_fail_too() -> None:
+    assert compare(_counts("1.0", 56, 0, 0), _counts("1.0", 55, 0, 0), 0.005)
+
+
+def test_equal_truth_count_passes() -> None:
+    assert compare(_counts("1.0", 54, 1, 0), _counts("1.0", 55, 0, 0), 0.005) == []
+
+
+def test_false_positive_in_an_empty_stratum_fails() -> None:
+    (problem,) = compare(_counts("", 0, 0, 2), _counts("", 0, 0, 0), 0.005)
+    assert problem == "HG002/bcftools/all/SNV: 2 false positives where none were expected"
+
+
+def test_empty_stratum_with_no_calls_passes() -> None:
+    assert compare(_counts("", 0, 0, 0), _counts("", 0, 0, 0), 0.005) == []
+
+
+def test_tables_without_count_columns_are_checked_on_f1_only() -> None:
+    assert compare(_table("0.9900"), _counts("0.9900", 55, 0, 0), 0.005) == []
+    assert compare(_counts("0.9900", 50, 0, 0), _table("0.9900"), 0.005) == []
+
+
+def test_the_shipped_expected_table_passes_against_itself() -> None:
+    table = pd.read_csv(ROOT / ".tests" / "expected_accuracy.tsv", sep="\t")
+    assert compare(table, table, 0.005) == []

@@ -1,2 +1,2 @@
 sample	fq1	fq2	truth_vcf	truth_bed
-HG002	../data/HG002_R1.fastq.gz	../data/HG002_R2.fastq.gz	../data/HG002_truth.vcf.gz	../data/HG002_truth.bed
+HG002	data/HG002_R1.fastq.gz	data/HG002_R2.fastq.gz	data/HG002_truth.vcf.gz	data/HG002_truth.bed

@@ -11,6 +11,7 @@ from pathlib import Path
 from typing import Any
 
 import pandas as pd
+from logsetup import log_failures, read_tsv, rule_logger
 
 KEEP = ["s", "max_rss", "cpu_time", "mean_load", "io_in", "io_out"]
 
@@ -22,7 +23,7 @@ def collect(benchmark_dir: str | Path) -> pd.DataFrame:
         rel = f.relative_to(root)
         rule = rel.parts[0].removesuffix(".tsv")
         job = rel.stem if len(rel.parts) > 1 else ""
-        df = pd.read_csv(f, sep="\t")
+        df = read_tsv(f)
         for _, r in df.iterrows():
             row: dict[str, Any] = {"rule": rule, "job": job}
             for k in KEEP:
@@ -49,12 +50,21 @@ def per_rule_summary(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def main(smk: Any) -> None:
-    df = collect(smk.params.benchmark_dir)
-    df.to_csv(smk.output.table, sep="\t", index=False)
-    summary = per_rule_summary(df)
-    summary.to_csv(smk.output.by_rule, sep="\t", index=False)
-    with open(smk.log[0], "w") as log:
-        print(summary.to_string(index=False), file=log)
+    log = rule_logger(smk)
+    with log_failures(log):
+        df = collect(smk.params.benchmark_dir)
+        log.info("read %d benchmark records from %s", len(df), smk.params.benchmark_dir)
+        df.to_csv(smk.output.table, sep="\t", index=False)
+        summary = per_rule_summary(df)
+        summary.to_csv(smk.output.by_rule, sep="\t", index=False)
+        log.info(
+            "wrote %d records to %s and %d rules to %s",
+            len(df),
+            smk.output.table,
+            len(summary),
+            smk.output.by_rule,
+        )
+        log.debug("per-rule summary:\n%s", summary.to_string(index=False))
 
 
 if "snakemake" in globals():

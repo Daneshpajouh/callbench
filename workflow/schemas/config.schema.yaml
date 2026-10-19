@@ -81,4 +81,8 @@ properties:
         type: string
         description: ClinVar GRCh38 VCF (bgzipped, tabix-indexed, no chr prefix).
     required: [vcf]
+  log_level:
+    type: string
+    enum: [DEBUG, INFO, WARNING, ERROR]
+    default: INFO
 required: [samples, reference, regions, aligner, callers, scatter, filters, evaluation, clinvar]

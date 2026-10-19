@@ -8,16 +8,27 @@ import sys
 from pathlib import Path
 from typing import Any
 
+from logsetup import log_failures, rule_logger
+
 Interval = tuple[str, int, int]
 
 
 def read_bed(path: str | Path) -> list[Interval]:
     out: list[Interval] = []
-    for line in Path(path).read_text().splitlines():
+    for lineno, line in enumerate(Path(path).read_text().splitlines(), start=1):
         if not line.strip() or line.startswith(("#", "track", "browser")):
             continue
-        chrom, start, end = line.split("\t")[:3]
-        out.append((chrom, int(start), int(end)))
+        f = line.split("\t")
+        if len(f) < 3:
+            raise ValueError(
+                f"{path}:{lineno}: expected at least 3 tab-separated columns, got {len(f)}"
+            )
+        try:
+            out.append((f[0], int(f[1]), int(f[2])))
+        except ValueError:
+            raise ValueError(
+                f"{path}:{lineno}: start and end must be integers, got {f[1]!r} and {f[2]!r}"
+            ) from None
     return out
 
 
@@ -46,10 +57,18 @@ def write_chunks(chunks: list[Interval], outdir: str | Path) -> list[Path]:
 
 
 def main(smk: Any) -> None:
-    chunks = split_intervals(read_bed(smk.input.regions), int(smk.params.chunk_size))
-    paths = write_chunks(chunks, smk.output[0])
-    with open(smk.log[0], "w") as log:
-        print(f"{len(paths)} chunks of at most {smk.params.chunk_size} bp", file=log)
+    log = rule_logger(smk)
+    with log_failures(log):
+        regions = read_bed(smk.input.regions)
+        log.info("read %d intervals from %s", len(regions), smk.input.regions)
+        chunks = split_intervals(regions, int(smk.params.chunk_size))
+        paths = write_chunks(chunks, smk.output[0])
+        log.info(
+            "wrote %d chunks of at most %s bp to %s",
+            len(paths),
+            smk.params.chunk_size,
+            smk.output[0],
+        )
 
 
 if "snakemake" in globals():

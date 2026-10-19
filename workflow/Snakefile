@@ -1,6 +1,13 @@
+import sys
+from pathlib import Path
+
+from snakemake import __version__ as SNAKEMAKE_VERSION
 from snakemake.utils import min_version
 
 min_version("9.0")
+
+sys.path.insert(0, str(Path(workflow.basedir) / "scripts"))
+import runlog
 
 
 configfile: "config/config.yaml"
@@ -23,3 +30,26 @@ rule all:
     default_target: True
     input:
         all_targets(),
+
+
+onstart:
+    manifest = runlog.write_manifest(
+        config,
+        samples.to_dict("records"),
+        Path(workflow.basedir),
+        SNAKEMAKE_VERSION,
+    )
+    print(f"run manifest written to {manifest}", file=sys.stderr)
+
+
+onsuccess:
+    summary = runlog.write_summary("success", all_targets())
+    print(f"run summary written to {summary}", file=sys.stderr)
+
+
+onerror:
+    summary = runlog.write_summary("error", all_targets())
+    print(
+        f"run summary written to {summary}; rule logs are under logs/",
+        file=sys.stderr,
+    )

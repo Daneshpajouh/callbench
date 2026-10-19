@@ -10,6 +10,8 @@ from collections.abc import Iterable
 from pathlib import Path
 from typing import IO, Any
 
+from logsetup import log_failures, rule_logger
+
 Interval = tuple[str, int, int]
 
 
@@ -22,11 +24,20 @@ def _open(path: str | Path) -> IO[str]:
 def read_bed(path: str | Path) -> list[Interval]:
     out: list[Interval] = []
     with _open(path) as fh:
-        for line in fh:
+        for lineno, line in enumerate(fh, start=1):
             if not line.strip() or line.startswith(("#", "track", "browser")):
                 continue
             f = line.rstrip("\n").split("\t")
-            out.append((f[0], int(f[1]), int(f[2])))
+            if len(f) < 3:
+                raise ValueError(
+                    f"{path}:{lineno}: expected at least 3 tab-separated columns, got {len(f)}"
+                )
+            try:
+                out.append((f[0], int(f[1]), int(f[2])))
+            except ValueError:
+                raise ValueError(
+                    f"{path}:{lineno}: start and end must be integers, got {f[1]!r} and {f[2]!r}"
+                ) from None
     return out
 
 
@@ -77,11 +88,20 @@ def write_bed(intervals: Iterable[Interval], path: str | Path) -> int:
 
 
 def main(smk: Any) -> None:
-    result = intersect(read_bed(smk.input[0]), read_bed(smk.input.regions))
-    n = write_bed(result, smk.output[0])
-    bp = sum(e - s for _, s, e in result)
-    with open(smk.log[0], "w") as log:
-        print(f"{n} intervals, {bp} bp", file=log)
+    log = rule_logger(smk)
+    with log_failures(log):
+        a, b = read_bed(smk.input[0]), read_bed(smk.input.regions)
+        log.info(
+            "read %d intervals from %s and %d from %s",
+            len(a),
+            smk.input[0],
+            len(b),
+            smk.input.regions,
+        )
+        result = intersect(a, b)
+        n = write_bed(result, smk.output[0])
+        bp = sum(e - s for _, s, e in result)
+        log.info("wrote %d intervals, %d bp to %s", n, bp, smk.output[0])
 
 
 if "snakemake" in globals():

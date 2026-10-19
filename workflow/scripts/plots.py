@@ -7,6 +7,7 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import pandas as pd
+from logsetup import log_failures, read_tsv, rule_logger
 
 
 def f1_figure(acc: pd.DataFrame, out: str) -> None:
@@ -44,8 +45,14 @@ def runtime_figure(by_rule: pd.DataFrame, out: str) -> None:
 
 
 def main(smk: Any) -> None:
-    f1_figure(pd.read_csv(smk.input.accuracy, sep="\t"), smk.output.f1)
-    runtime_figure(pd.read_csv(smk.input.profiling, sep="\t"), smk.output.runtime)
+    log = rule_logger(smk)
+    with log_failures(log):
+        accuracy = read_tsv(smk.input.accuracy)
+        profiling = read_tsv(smk.input.profiling)
+        log.info("read %d accuracy rows and %d profiling rows", len(accuracy), len(profiling))
+        f1_figure(accuracy, smk.output.f1)
+        runtime_figure(profiling, smk.output.runtime)
+        log.info("wrote %s and %s", smk.output.f1, smk.output.runtime)
 
 
 if "snakemake" in globals():

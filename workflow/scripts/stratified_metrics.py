@@ -7,10 +7,13 @@ how hap.py and the GA4GH benchmarking definitions count them. A record is
 assigned to a stratum when its POS falls in the stratum BED (bcftools -T).
 """
 
+import logging
 import os
 import subprocess
 from dataclasses import dataclass
 from typing import Any
+
+from logsetup import log_failures, rule_logger
 
 VARIANT_TYPES = {"SNV": "snps", "INDEL": "indels"}
 
@@ -49,8 +52,10 @@ def count_records(vcf: str, vtype: str, bed: str | None) -> int:
     if bed is not None:
         cmd += ["-T", bed]
     cmd.append(vcf)
-    out = subprocess.run(cmd, check=True, capture_output=True, text=True).stdout
-    return sum(1 for line in out.splitlines() if line)
+    proc = subprocess.run(cmd, capture_output=True, text=True)
+    if proc.returncode:
+        raise ValueError(f"{vcf}: bcftools view exited {proc.returncode}: {proc.stderr.strip()}")
+    return sum(1 for line in proc.stdout.splitlines() if line)
 
 
 def fmt(x: float | None) -> str:
@@ -58,8 +63,19 @@ def fmt(x: float | None) -> str:
 
 
 def main(smk: Any) -> None:
+    log = rule_logger(smk)
+    with log_failures(log):
+        write_table(smk, log)
+
+
+def write_table(smk: Any, log: logging.Logger) -> None:
     strata: dict[str, str | None] = {"all": None}
     strata.update(dict(zip(smk.params.strata, smk.input.strata, strict=True)))
+    log.info(
+        "reading vcfeval tp-baseline, fn, tp and fp for %s and %d strata",
+        smk.wildcards.caller,
+        len(strata),
+    )
     header = [
         "sample",
         "caller",
@@ -101,6 +117,7 @@ def main(smk: Any) -> None:
             )
     with open(smk.output[0], "w") as fh:
         fh.write("\n".join(rows) + "\n")
+    log.info("wrote %d rows to %s", len(rows) - 1, smk.output[0])
 
 
 if "snakemake" in globals():

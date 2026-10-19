@@ -78,7 +78,11 @@ rule call_freebayes:
 
 rule gather_calls:
     input:
-        unpack(gathered_chunks),
+        # Two lambdas rather than unpack(): during a dry run the checkpoint
+        # has not run, and unpack() of the pending function leaves no named
+        # input for {input.vcfs} to resolve.
+        vcfs=lambda wc: gathered_chunks(wc)["vcfs"],
+        tbis=lambda wc: gathered_chunks(wc)["tbis"],
     output:
         vcf="results/calls/{sample}/{caller}.raw.vcf.gz",
         tbi="results/calls/{sample}/{caller}.raw.vcf.gz.tbi",

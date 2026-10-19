@@ -4,17 +4,24 @@ import json
 from typing import Any
 
 import pandas as pd
+from logsetup import log_failures, read_tsv, rule_logger
 
 
 def fastp_metrics(path: str) -> dict[str, float]:
-    with open(path) as fh:
-        d = json.load(fh)
-    before = d["summary"]["before_filtering"]
-    after = d["summary"]["after_filtering"]
+    try:
+        with open(path) as fh:
+            d = json.load(fh)
+        before = d["summary"]["before_filtering"]
+        after = d["summary"]["after_filtering"]
+        reads_raw, reads_after, q30 = before["total_reads"], after["total_reads"], after["q30_rate"]
+    except json.JSONDecodeError as exc:
+        raise ValueError(f"{path}:{exc.lineno}: invalid JSON: {exc.msg}") from exc
+    except KeyError as exc:
+        raise ValueError(f"{path}: fastp report has no {exc.args[0]!r} entry") from exc
     return {
-        "reads_raw": before["total_reads"],
-        "reads_after_fastp": after["total_reads"],
-        "q30_rate_after": round(after["q30_rate"], 4),
+        "reads_raw": reads_raw,
+        "reads_after_fastp": reads_after,
+        "q30_rate_after": round(q30, 4),
         "duplication_rate_fastp": round(d.get("duplication", {}).get("rate", float("nan")), 4),
     }
 
@@ -29,33 +36,52 @@ def samtools_sn(path: str) -> dict[str, float]:
     }
     out: dict[str, float] = {}
     with open(path) as fh:
-        for line in fh:
+        for lineno, line in enumerate(fh, start=1):
             if not line.startswith("SN\t"):
                 continue
-            _, key, value = line.rstrip("\n").split("\t")[:3]
-            if key in wanted:
-                out[wanted[key]] = float(value)
+            f = line.rstrip("\n").split("\t")
+            if len(f) < 3:
+                raise ValueError(
+                    f"{path}:{lineno}: expected SN, key and value columns, got {len(f)}"
+                )
+            if f[1] in wanted:
+                try:
+                    out[wanted[f[1]]] = float(f[2])
+                except ValueError:
+                    raise ValueError(
+                        f"{path}:{lineno}: {f[1]!r} is not numeric: {f[2]!r}"
+                    ) from None
     return out
 
 
 def mosdepth_mean(path: str) -> dict[str, float]:
-    df = pd.read_csv(path, sep="\t")
-    region_rows = df[df["chrom"] == "total_region"]
-    row = region_rows.iloc[0] if len(region_rows) else df[df["chrom"] == "total"].iloc[0]
+    df = read_tsv(path)
+    # With --by, mosdepth adds a total_region row; without it only total exists.
+    for label in ("total_region", "total"):
+        rows = df[df["chrom"] == label]
+        if len(rows):
+            row = rows.iloc[0]
+            break
+    else:
+        raise ValueError(f"{path}: no total_region or total row in the mosdepth summary")
     return {"mean_depth_regions": round(float(row["mean"]), 2)}
 
 
 def main(smk: Any) -> None:
-    rows = []
-    for sample, fp, st, md in zip(
-        smk.params.samples, smk.input.fastp, smk.input.stats, smk.input.mosdepth, strict=True
-    ):
-        row: dict[str, Any] = {"sample": sample}
-        row.update(fastp_metrics(fp))
-        row.update(samtools_sn(st))
-        row.update(mosdepth_mean(md))
-        rows.append(row)
-    pd.DataFrame(rows).to_csv(smk.output[0], sep="\t", index=False)
+    log = rule_logger(smk)
+    with log_failures(log):
+        rows = []
+        for sample, fp, st, md in zip(
+            smk.params.samples, smk.input.fastp, smk.input.stats, smk.input.mosdepth, strict=True
+        ):
+            log.info("reading %s, %s and %s for %s", fp, st, md, sample)
+            row: dict[str, Any] = {"sample": sample}
+            row.update(fastp_metrics(fp))
+            row.update(samtools_sn(st))
+            row.update(mosdepth_mean(md))
+            rows.append(row)
+        pd.DataFrame(rows).to_csv(smk.output[0], sep="\t", index=False)
+        log.info("wrote %d samples to %s", len(rows), smk.output[0])
 
 
 if "snakemake" in globals():

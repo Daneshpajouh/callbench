@@ -4,10 +4,10 @@
 samples: config/samples.tsv
 
 reference:
-  fasta: ../data/genome.fa
+  fasta: data/genome.fa
   build: GRCh38
 
-regions: ../data/regions.bed
+regions: data/regions.bed
 
 aligner: bwa
 
@@ -34,11 +34,13 @@ filters:
 
 evaluation:
   stratifications:
-    low_complexity: ../data/GRCh38_AllTandemRepeatsandHomopolymers_slop5.bed
-    segdups: ../data/GRCh38_segdups.bed
-    low_mappability: ../data/GRCh38_lowmappabilityall.bed
-    all_difficult: ../data/GRCh38_alldifficultregions.bed
-    not_difficult: ../data/GRCh38_notinalldifficultregions.bed
+    low_complexity: data/GRCh38_AllTandemRepeatsandHomopolymers_slop5.bed
+    segdups: data/GRCh38_segdups.bed
+    low_mappability: data/GRCh38_lowmappabilityall.bed
+    all_difficult: data/GRCh38_alldifficultregions.bed
+    not_difficult: data/GRCh38_notinalldifficultregions.bed
 
 clinvar:
-  vcf: ../data/clinvar.vcf.gz
+  vcf: data/clinvar.vcf.gz
+
+log_level: DEBUG

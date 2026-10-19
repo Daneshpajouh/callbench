@@ -45,3 +45,6 @@ evaluation:
 
 clinvar:
   vcf: resources/full/clinvar/clinvar.vcf.gz
+
+# Level for the Python scripts' rule logs: DEBUG, INFO, WARNING or ERROR.
+log_level: INFO

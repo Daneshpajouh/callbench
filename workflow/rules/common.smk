@@ -20,7 +20,8 @@ STRATA = list(config["evaluation"]["stratifications"])
 wildcard_constraints:
     sample="|".join(SAMPLES),
     caller="|".join(CALLERS),
-    chunk=r"\d{4,}",
+    # No braces: Snakemake misreads a quantifier such as {4,} inside a constraint.
+    chunk=r"\d\d\d\d+",
     stratum="|".join(STRATA),
 
 

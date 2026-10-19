@@ -20,7 +20,7 @@ STRATA = list(config["evaluation"]["stratifications"])
 wildcard_constraints:
     sample="|".join(SAMPLES),
     caller="|".join(CALLERS),
-    chunk=r"\d{4}",
+    chunk=r"\d{4,}",
     stratum="|".join(STRATA),
 
 

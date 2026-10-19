@@ -5,7 +5,7 @@ is ready for review when all four pass.
 
 | Layer | Command | Run time here | What it catches |
 | --- | --- | --- | --- |
-| Unit | `make test` | about 6 s, 381 tests | Logic errors in the Python scripts: interval arithmetic, metric definitions, parsing of fastp, samtools, mosdepth and benchmark files, error messages |
+| Unit | `make test` | about 6 s, 382 tests | Logic errors in the Python scripts: interval arithmetic, metric definitions, parsing of fastp, samtools, mosdepth and benchmark files, error messages |
 | Workflow static | `.venv/bin/python -m pytest -m workflow tests/workflow` | 3.2 s, 3 tests | Broken DAG (dry run of the full config), `snakemake --lint` findings, unformatted Snakefiles |
 | End to end | `make test-workflow` | 29 to 48 s warm, 102 s with first-time conda builds | Rules that do not connect, wrong tool flags, environment solver conflicts, temp files deleted too early |
 | Validation | full run, then `docs/validation.md` | 212 s | Accuracy against GIAB truth; regressions after a caller, parameter or reference change |
@@ -24,7 +24,7 @@ file still has that property.
 
 Coverage from the run on 2026-10-19 on the v1.0.2 tree
 (`.venv/bin/python -m pytest -q --cov=workflow/scripts --cov=tools tests/unit`):
-381 passed; 601 statements, 1 missed, 99%. Every script is at 100% except
+382 passed; 602 statements, 1 missed, 99%. Every script is at 100% except
 `runlog.py` (66 of 67 statements, shown as 99%).
 
 At 1.0.2 the same suite was run from a fresh clone in a `python:3.12-slim` Linux

@@ -70,6 +70,8 @@ def summarise(roc: pd.DataFrame, target_precision: float) -> dict[str, float | N
     recall = (roc["tp_base"] / truth).where(truth > 0)
     precision = (roc["tp_call"] / called).where(called > 0)
     f1 = (2 * precision * recall / (precision + recall)).where((precision + recall) > 0)
+    # Defined but both zero (calls and truth, no true positives) is an F1 of 0, not NA.
+    f1 = f1.mask(precision.notna() & recall.notna() & (precision + recall == 0), 0.0)
     result: dict[str, float | None] = {
         "best_f1": None,
         "best_f1_score": None,

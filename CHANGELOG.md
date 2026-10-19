@@ -13,8 +13,10 @@ schema is MAJOR, a new caller, rule or report section is MINOR, a fix is PATCH.
   `2/2`) was dropped, and a split `0/1` record left a `0/0` record behind.
   They now select `GT="alt"` before the split and again after it
   (`tests/unit/test_genotype_filter.py`).
-* F1 is 0, not NA, when a stratum has calls and truth variants but no true
-  positives. No committed table had such a row.
+* F1 is 0, not NA, when a stratum or ROC threshold has calls and truth
+  variants but no true positives. No committed table had such a row.
+* Chunk names are four or more digits, so a scatter of 10,000 or more chunks
+  still matches the calling rules.
 * `tools/check_accuracy.py` fails when a row is repeated in either table.
 
 ### Documented

@@ -1,7 +1,8 @@
 name: Image test
 
-# Runs the integration test inside a published image, the way a cluster job without
-# network would: tools from the image, snakemake added in a venv on its Python.
+# Runs the integration test inside a published image: tools from the image, snakemake
+# installed with pip into a venv on the image's Python (that step uses the network; the
+# workflow itself reads only the bundled test data).
 on:
   workflow_dispatch:
     inputs:

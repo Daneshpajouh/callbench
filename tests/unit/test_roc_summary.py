@@ -90,6 +90,12 @@ def test_unreachable_target_gives_no_recall(tmp_path: Path) -> None:
     assert s["best_f1"] == pytest.approx(0.9)
 
 
+def test_calls_and_truth_without_true_positives_give_f1_zero(tmp_path: Path) -> None:
+    rows = [(30.0, 0, 4, 0, 10)]
+    s = summarise(read_roc(_write(tmp_path / "r.tsv.gz", rows)), 0.99)
+    assert s["best_f1"] == 0.0
+
+
 def test_empty_table_gives_no_values(tmp_path: Path) -> None:
     s = summarise(read_roc(_write(tmp_path / "r.tsv.gz", [])), 0.99)
     assert all(v is None for v in s.values())

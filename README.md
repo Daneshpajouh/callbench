@@ -53,7 +53,7 @@ make test-workflow
 ```
 
 This runs every rule on a 200 kb slice of chr17 around BRCA1 (19,856 HG002
-read pairs, 6.2 MB in `.tests/integration/data/`) and then compares the
+read pairs, 5.5 MB in `.tests/integration/data/`) and then compares the
 accuracy table with `.tests/expected_accuracy.tsv`. On the build machine the
 first run took 102 s, most of it building eight conda environments; later runs
 took 29 to 48 s. The last lines of a passing run:

@@ -150,8 +150,9 @@ for a production decision.
 
 ## Adding a new caller to an existing pipeline
 
-The pipeline is built so that a new caller touches three files and nothing
-downstream changes.
+The pipeline is built so that a new caller touches five files (`call.smk`,
+an environment file, the config schema, the config and the expected
+accuracy table) and nothing downstream changes.
 
 1. Adapter rule. Add `call_<name>` in `workflow/rules/call.smk` that reads
    the duplicate-marked BAM and one chunk BED and writes the output contract:

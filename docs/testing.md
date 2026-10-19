@@ -54,7 +54,7 @@ are marked `workflow` and deselected by plain `pytest`.
 ## End to end
 
 `profiles/test` runs every rule on a 200 kb slice of chr17 around BRCA1
-(19,856 HG002 read pairs, 6.2 MB in `.tests/integration/data/`, built by
+(19,856 HG002 read pairs, 5.5 MB in `.tests/integration/data/`, built by
 `tools/make_test_data.sh`). `tools/check_accuracy.py` then compares the
 accuracy table with `.tests/expected_accuracy.tsv` and fails when any F1
 drops by more than 0.005. On the slice both callers find all 55 truth SNVs and

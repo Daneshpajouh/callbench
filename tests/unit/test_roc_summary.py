@@ -118,3 +118,18 @@ def test_rule_script_writes_the_summary(tmp_path: Path) -> None:
     table = pd.read_csv(out, sep="\t")
     assert table["type"].tolist() == ["SNV", "INDEL"]
     assert table["best_f1"].tolist() == [0.95, 0.95]
+
+
+def test_command_line_prints_the_summary(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    import runpy
+    import sys
+
+    from smk_stub import SCRIPTS
+
+    path = _write(tmp_path / "snp_roc.tsv.gz", ROWS)
+    monkeypatch.setattr(sys, "argv", ["roc_summary.py", str(path), "0.98"])
+    runpy.run_path(str(SCRIPTS / "roc_summary.py"), run_name="__main__")
+    out = capsys.readouterr().out
+    assert "best_f1" in out and "recall_at_target" in out

@@ -32,7 +32,7 @@ From `results/qc/qc_summary.tsv`:
 
 | Metric | Value |
 | --- | --- |
-| Read pairs x 2 before fastp | 850,492 |
+| Reads before fastp, both mates (425,246 pairs) | 850,492 |
 | Reads after fastp | 814,284 |
 | Q30 rate after fastp | 0.9144 |
 | Reads mapped in evaluation intervals (samtools stats) | 771,476 |

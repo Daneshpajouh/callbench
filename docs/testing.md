@@ -22,10 +22,10 @@ lines each, under `tests/data/`; `tests/data/README.md` lists what each one
 exercises and which test uses it, and `test_fixtures.py` checks that each
 file still has that property.
 
-Coverage from the run on 2026-10-19
+Coverage from the run on 2026-10-19 on the v1.0.2 tree
 (`.venv/bin/python -m pytest -q --cov=workflow/scripts --cov=tools tests/unit`):
-512 statements, 1 missed, 99%. Every script is at 100% except `runlog.py`
-(98%).
+367 passed; 587 statements, 1 missed, 99%. Every script is at 100% except
+`runlog.py` (66 of 67 statements, shown as 99%).
 
 The same suite was run from a fresh clone in a `python:3.12-slim` Linux
 container (`pip install -r requirements-dev.txt`, then the commands above):

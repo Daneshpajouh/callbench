@@ -23,6 +23,7 @@ jobs:
       - run: ruff check . && ruff format --check .
       - run: mypy
       - run: shellcheck tools/*.sh
+        if: runner.os == 'Linux'
       - run: python -m pytest -q --cov=workflow/scripts --cov=tools tests/unit
       - run: python -m pytest -q -m workflow tests/workflow
 

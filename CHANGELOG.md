@@ -4,11 +4,11 @@ All notable changes to this workflow. Versions follow semantic versioning as
 defined in `CONTRIBUTING.md`: a change to the output contract or the config
 schema is MAJOR, a new caller, rule or report section is MINOR, a fix is PATCH.
 
-## [Unreleased]
+## [1.0.2] - 2026-10-19
 
-Planned as 1.0.2. Full-size and test-profile results are rerun on this code:
-the FreeBayes padding changed no count in any stratum, and the tables are in
-`docs/results-v1.0.2/`.
+Renamed from germline-benchmark-smk to callbench. Full-size and test-profile
+results are rerun on this code: the FreeBayes padding changed no count in any
+stratum, and the tables are in `docs/results-v1.0.2/`.
 
 ### Added
 
@@ -22,8 +22,10 @@ the FreeBayes padding changed no count in any stratum, and the tables are in
   and keeps only records whose POS lies in the unpadded chunk, so a variant
   near a chunk edge is called with its full haplotype window.
 * `tools/check_accuracy.py` also requires the truth count (tp_base + fn) to
-  match, and fails a stratum with no expected F1 when false positives appear.
-* CI job `lint` renamed `checks`; it also runs the tests.
+  match, and fails a stratum with no expected F1 when false positives appear
+  or when its row is missing from the observed table.
+* CI job `lint` renamed `checks`; it also runs the tests. shellcheck runs on
+  the Linux runner only.
 
 ### Fixed
 

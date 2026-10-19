@@ -1,0 +1,14 @@
+rule	jobs	wall_s_total	wall_s_max	cpu_s_total	max_rss_mb_peak
+annotate_clinvar	2	1.0	0.5	0.0	7.4
+bwa_index	1	146.6	146.6	139.9	564.8
+bwa_mem	1	16.2	16.2	96.2	1379.9
+call_bcftools	8	16.8	2.5	5.2	191.0
+call_freebayes	8	18.6	2.6	9.4	371.4
+fastp	1	24.4	24.4	21.0	344.5
+gather_calls	2	0.9	0.4	0.0	7.4
+markdup	1	1.5	1.5	2.2	30.8
+mosdepth	1	2.3	2.3	1.2	901.0
+normalise	2	0.8	0.4	0.0	7.3
+samtools_stats	1	1.2	1.2	0.9	15.9
+stratified_metrics	2	4.9	2.6	1.5	112.3
+vcfeval	2	5.1	2.6	0.0	7.4

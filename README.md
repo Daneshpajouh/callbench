@@ -27,16 +27,16 @@ This workflow does that for two callers, bcftools and FreeBayes, on HG002
 reads around BRCA1 and BRCA2, and reports accuracy, runtime and memory side by
 side.
 
-## Results (v1.0.0, HG002, 3.8 Mb around BRCA1 and BRCA2)
+## Results (v1.0.2, HG002, 3.8 Mb around BRCA1 and BRCA2)
 
 | Caller | SNV recall | SNV precision | SNV F1 | Indel recall | Indel precision | Indel F1 |
 | --- | --- | --- | --- | --- | --- | --- |
-| bcftools 1.23.1 | 0.9965 | 0.9979 | 0.9972 | 0.9117 | 0.9254 | 0.9185 |
+| bcftools 1.24 | 0.9965 | 0.9979 | 0.9972 | 0.9117 | 0.9254 | 0.9185 |
 | FreeBayes 1.3.10 | 0.9953 | 0.9951 | 0.9952 | 0.9087 | 0.9560 | 0.9318 |
 
 3,412 truth SNVs and 657 truth indels inside the GIAB confident regions; about
-29x mean depth. Per-stratum numbers, runtime and memory are in
-`docs/validation.md`; the deployment recommendation is in
+29x mean depth. The tables behind these numbers are in `docs/results-v1.0.2/`.
+Per-stratum numbers, runtime and memory are in `docs/validation.md`; the deployment recommendation is in
 `docs/evaluation/caller_evaluation.md`. These numbers describe two 1.9 Mb windows
 picked for their genes, not the whole genome.
 

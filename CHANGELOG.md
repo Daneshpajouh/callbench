@@ -6,9 +6,9 @@ schema is MAJOR, a new caller, rule or report section is MINOR, a fix is PATCH.
 
 ## [Unreleased]
 
-Planned as 1.0.2. Calls change for FreeBayes (padding), so the full-size and
-test-profile results need a rerun before release; the figures in
-`docs/validation.md` are those of 1.0.1 until then.
+Planned as 1.0.2. Full-size and test-profile results are rerun on this code:
+the FreeBayes padding changed no count in any stratum, and the tables are in
+`docs/results-v1.0.2/`.
 
 ### Added
 
@@ -25,10 +25,18 @@ test-profile results need a rerun before release; the figures in
   match, and fails a stratum with no expected F1 when false positives appear.
 * CI job `lint` renamed `checks`; it also runs the tests.
 
+### Fixed
+
+* `roc_summary` read RTG Tools 3.13's `#score field: QUAL` line as the column
+  header and failed on the first full run; it now matches `#score` and a tab.
+
 ### Documented
 
-* Caller memo: the default rests on SNV accuracy and cost, with exact tests;
+* Caller memo: the default rests on SNV accuracy and memory cost, with exact tests;
   the easy-indel gap (2 against 9 of 196, p about 0.06) is marked suggestive.
+  The wall-time gap between the callers is within run-to-run variation.
+* Validation: the comparison across the QUAL score is filled in from the
+  v1.0.2 run, and every table points at `docs/results-v1.0.2/`.
 * One measured test-data size (5.5 MB), the five files a new caller touches,
   the read count before fastp, and a coverage excerpt from the current tree.
 

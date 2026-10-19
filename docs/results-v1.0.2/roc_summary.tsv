@@ -1,0 +1,5 @@
+sample	caller	type	best_f1	best_f1_score	target_precision	recall_at_target	score_at_target
+HG002	bcftools	SNV	0.9972	27.8660	0.9900	0.9971	6.0730
+HG002	bcftools	INDEL	0.9201	14.0430	0.9900	0.4677	221.0310
+HG002	freebayes	SNV	0.9952	10.2540	0.9900	0.9962	0.7410
+HG002	freebayes	INDEL	0.9384	1.6540	0.9900	0.3593	507.8910

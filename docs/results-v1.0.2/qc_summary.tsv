@@ -1,0 +1,2 @@
+sample	reads_raw	reads_after_fastp	q30_rate_after	duplication_rate_fastp	reads_mapped	reads_properly_paired	reads_duplicated	error_rate	insert_size_mean	mean_depth_regions
+HG002	850492	814284	0.9144	0.0001	771476.0	769885.0	3432.0	0.00319518	544.1	29.43

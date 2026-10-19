@@ -1,4 +1,4 @@
-# Validation report, v1.0.0
+# Validation report, v1.0.2
 
 What was run, on what, with which command, and what came out. Every number
 here comes from the files named next to it; nothing was typed in by hand.
@@ -19,16 +19,18 @@ here comes from the files named next to it; nothing was typed in by hand.
   nice -n 10 .venv/bin/python tools/snakemake_macos.py --profile profiles/local --forceall
   ```
 
+  Last run at commit 7961c95, started 13:53 Pacific: 57 of 57 steps, 190.6 s.
+
 * Inputs: HG002 reads, GRCh38 chr13 and chr17, GIAB v4.2.1 truth, GIAB v3.3
   stratifications and ClinVar 2026-10-11, all listed with SHA-256 in
   `docs/data_sources.md`.
-* Outputs read for this report: `results/report/accuracy.tsv`,
-  `results/qc/qc_summary.tsv`, `results/report/profiling.by_rule.tsv`,
-  `results/report/clinvar_summary.tsv`.
+* Outputs read for this report, copied from that run into `docs/results-v1.0.2/`:
+  `accuracy.tsv`, `qc_summary.tsv`, `profiling.by_rule.tsv`,
+  `clinvar_summary.tsv` and `roc_summary.tsv`.
 
 ## Read and alignment QC (HG002)
 
-From `results/qc/qc_summary.tsv`:
+From `docs/results-v1.0.2/qc_summary.tsv`:
 
 | Metric | Value |
 | --- | --- |
@@ -51,7 +53,12 @@ VCFs. Recall uses truth-side counts (`tp_base`, `fn`) and precision uses
 call-side counts (`tp_call`, `fp`), as in the GA4GH benchmarking definitions
 used by hap.py. Both callers had the same filter, `QUAL>=20`.
 
-All confident regions:
+From v1.0.2 FreeBayes calls each chunk padded by 1 kb and keeps only records
+whose POS lies in the chunk. On these inputs that changed no count in any
+stratum: `docs/results-v1.0.2/accuracy.tsv` is byte-identical to the output of
+the last run before the change (12:17 Pacific, commit 7258aa8).
+
+All confident regions, from `docs/results-v1.0.2/accuracy.tsv`:
 
 | Caller | Type | TP (truth) | FN | TP (calls) | FP | Recall | Precision | F1 |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -95,11 +102,22 @@ each caller's best F1 over all QUAL thresholds and its recall at precision
 0.99 (`evaluation.roc_target_precision`). The deployed filter and
 `accuracy.tsv` do not change.
 
-Results: not yet run. The rerun command is
+From `docs/results-v1.0.2/roc_summary.tsv`:
 
-    snakemake --profile profiles/local results/report/roc_summary.tsv
+| Caller | Type | Best F1 | QUAL at best F1 | Recall at precision 0.99 | QUAL there |
+| --- | --- | --- | --- | --- | --- |
+| bcftools | SNV | 0.9972 | 27.9 | 0.9971 | 6.1 |
+| bcftools | INDEL | 0.9201 | 14.0 | 0.4677 | 221.0 |
+| FreeBayes | SNV | 0.9952 | 10.3 | 0.9962 | 0.7 |
+| FreeBayes | INDEL | 0.9384 | 1.7 | 0.3593 | 507.9 |
 
-and its figures go here when it has run.
+Over all cuts the ordering at `QUAL>=20` holds: bcftools is ahead on SNVs
+(best F1 0.9972 against 0.9952) and FreeBayes on indels (0.9384 against
+0.9201). FreeBayes reaches its best indel F1 at QUAL 1.7, far below the
+deployed cut. At precision 0.99 the order reverses for indels: bcftools keeps
+46.8% of truth indels and FreeBayes 35.9%. Each best F1 picks its threshold on
+the same data it is scored on, so it is optimistic; it ranks the callers, it
+does not set a filter.
 
 ## Run-to-run reproducibility
 
@@ -107,7 +125,7 @@ Three complete runs on the same inputs gave identical QC, identical bcftools
 counts in every stratum and identical FreeBayes SNV counts. FreeBayes indel
 counts differed by one record in low-complexity sequence: 596 true positives
 (F1 0.9302) in a run started at 11:51 Pacific, 597 (F1 0.9318) in the clean
-run reported above and in the bcftools 1.24 run.
+run, in the bcftools 1.24 run and in the v1.0.2 run reported above.
 
 Cause, found at 12:43: FreeBayes 1.3.10 itself. Running it twice on the same
 BAM and the same 500 kb chunk (chr17:43,050,000-43,550,000) gave identical

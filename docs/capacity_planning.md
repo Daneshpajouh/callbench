@@ -9,6 +9,11 @@ listed. Do not quote Part 2 numbers as measurements.
 Host: Mac Studio, Apple Silicon, 28 cores, 96 GB RAM; workflow limited to 8
 cores and 24 GB, `nice -n 10`; native arm64 builds of every tool.
 
+These figures are one timed run under `/usr/bin/time`. The v1.0.2 validation
+run's per-rule table is in `docs/results-v1.0.2/profiling.by_rule.tsv`; the
+same rules there differ by run-to-run variation (FreeBayes calling summed
+18.6 s against 27.3 s here, bwa index 146.6 s against 155.9 s), not by code.
+
 ### Whole run, HG002, 3.8 Mb evaluation intervals, about 29x
 
 Command: `nice -n 10 .venv/bin/python tools/snakemake_macos.py --profile profiles/local --forceall`

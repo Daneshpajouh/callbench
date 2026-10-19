@@ -82,16 +82,19 @@ including checks before and after a run, is `docs/sop.md`.
 ## Containers
 
 `Dockerfile` is the output of `snakemake --containerize` with the base image
-pinned by digest: one prebuilt conda environment per rule. It was built
-locally on 2026-10-19 for linux/amd64 (`docker build --platform linux/amd64
--t callbench:1.0.0 .`, 3 min 15 s under emulation, 1.05 GB), and
-the tools in it were run (`bcftools 1.21` and `1.23.1`, `freebayes v1.3.10`,
-`RTG Tools 3.13`, `fastp 1.4.0`, `mosdepth 0.3.14`, `minimap2 2.31`). The
-release workflow publishes it to `ghcr.io/daneshpajouh/callbench`.
-On a Slurm cluster with Apptainer, add
-`containerized: "docker://ghcr.io/daneshpajouh/callbench:v1.0.0"`
-to the Snakefile and run with `--sdm conda apptainer`. The test profile has
-not yet been run inside the container; it has run with conda on macOS.
+pinned by digest: one prebuilt conda environment per rule. The 1.0.0 image was
+built on 2026-10-19 for linux/amd64 (`docker build --platform linux/amd64
+-t callbench:1.0.0 .`, 3 min 15 s under emulation, 1.05 GB). The integration
+test (HG002 reads on a 200 kb slice of chr17, both callers, vcfeval and the
+accuracy check) ran inside that image with no network twice: on a workstation,
+and as an Apptainer image on a Slurm compute node, 44 of 44 steps each time
+with the same accuracy table. The 1.0.2 code passed the same test in that
+image. The current Dockerfile pins bcftools 1.24 and has not been built yet.
+
+The release workflow publishes the image to `ghcr.io/daneshpajouh/callbench`
+when a version is tagged. On a Slurm cluster with Apptainer, add a
+`containerized:` line with that image to the Snakefile and run with
+`--sdm conda apptainer`.
 
 ## How it works
 

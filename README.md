@@ -93,8 +93,9 @@ image.
 
 The release workflow builds the image from the current Dockerfile (bcftools
 1.24) and publishes it when a version is tagged:
-`ghcr.io/daneshpajouh/callbench:v1.0.2`. The integration test has not been run
-inside that image yet. On a Slurm cluster with Apptainer, add
+`ghcr.io/daneshpajouh/callbench:v1.0.2`. The integration test ran inside that
+image in GitHub Actions on 2026-10-19 (`.github/workflows/image-test.yml`, 44 of
+44 steps, accuracy check passed). On a Slurm cluster with Apptainer, add
 `containerized: "docker://ghcr.io/daneshpajouh/callbench:v1.0.2"` to the
 Snakefile and run with `--sdm conda apptainer`.
 

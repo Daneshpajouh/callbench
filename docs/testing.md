@@ -24,7 +24,7 @@ file still has that property.
 
 Coverage from the run on 2026-10-19 on the v1.0.2 tree
 (`.venv/bin/python -m pytest -q --cov=workflow/scripts --cov=tools tests/unit`):
-367 passed; 587 statements, 1 missed, 99%. Every script is at 100% except
+377 passed; 591 statements, 1 missed, 99%. Every script is at 100% except
 `runlog.py` (66 of 67 statements, shown as 99%).
 
 The same suite was run from a fresh clone in a `python:3.12-slim` Linux

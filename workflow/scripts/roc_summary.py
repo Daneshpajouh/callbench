@@ -15,6 +15,7 @@ import sys
 from pathlib import Path
 from typing import Any
 
+import numpy as np
 import pandas as pd
 from logsetup import log_failures, rule_logger
 
@@ -74,29 +75,35 @@ def summarise(roc: pd.DataFrame, target_precision: float) -> dict[str, float | N
         "recall_at_target": None,
         "score_at_target": None,
     }
-    if f1.notna().any():
-        i = f1.idxmax()
-        result["best_f1"] = float(f1[i])
-        result["best_f1_score"] = float(roc["score"][i])
-    meets = recall[precision >= target_precision - 1e-12].dropna()
-    if not meets.empty:
-        j = meets.idxmax()
-        result["recall_at_target"] = float(recall[j])
-        result["score_at_target"] = float(roc["score"][j])
+    f1_v = f1.to_numpy(dtype=float)
+    recall_v = recall.to_numpy(dtype=float)
+    scores = roc["score"].to_numpy(dtype=float)
+    if not np.isnan(f1_v).all():
+        i = int(np.nanargmax(f1_v))
+        result["best_f1"] = float(f1_v[i])
+        result["best_f1_score"] = float(scores[i])
+    meets = np.flatnonzero((precision >= target_precision - 1e-12).to_numpy() & ~np.isnan(recall_v))
+    if meets.size:
+        j = int(meets[np.argmax(recall_v[meets])])
+        result["recall_at_target"] = float(recall_v[j])
+        result["score_at_target"] = float(scores[j])
     return result
 
 
-def summary_table(
-    pairs: list[tuple[str, str, str]], target_precision: float
-) -> pd.DataFrame:
+def summary_table(pairs: list[tuple[str, str, str]], target_precision: float) -> pd.DataFrame:
     """One row per (sample, caller, type) from (sample, caller, vcfeval directory) pairs."""
     rows: list[dict[str, Any]] = []
     for sample, caller, outdir in pairs:
         for vtype, name in ROC_FILES.items():
             s = summarise(read_roc(Path(outdir) / name), target_precision)
             rows.append(
-                {"sample": sample, "caller": caller, "type": vtype,
-                 "target_precision": target_precision, **s}
+                {
+                    "sample": sample,
+                    "caller": caller,
+                    "type": vtype,
+                    "target_precision": target_precision,
+                    **s,
+                }
             )
     return pd.DataFrame(rows, columns=SUMMARY_COLUMNS)
 

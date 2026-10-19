@@ -110,8 +110,12 @@ def test_rule_script_writes_the_summary(tmp_path: Path) -> None:
         params=type(
             "P",
             (),
-            {"samples": ["HG002"], "callers": ["bcftools"], "dirs": [str(d)],
-             "target_precision": 0.99},
+            {
+                "samples": ["HG002"],
+                "callers": ["bcftools"],
+                "dirs": [str(d)],
+                "target_precision": 0.99,
+            },
         )(),
     )
     run_as_rule_script("roc_summary", smk)

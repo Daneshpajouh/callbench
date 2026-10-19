@@ -6,6 +6,32 @@ schema is MAJOR, a new caller, rule or report section is MINOR, a fix is PATCH.
 
 ## [Unreleased]
 
+Planned as 1.0.2. Calls change for FreeBayes (padding), so the full-size and
+test-profile results need a rerun before release; the figures in
+`docs/validation.md` are those of 1.0.1 until then.
+
+### Added
+
+* Opt-in comparison across the QUAL score (`evaluation.roc`): vcfeval on
+  unfiltered calls with `--vcf-score-field QUAL`, summarised in
+  `results/report/roc_summary.tsv` as best F1 and recall at a target precision.
+
+### Changed
+
+* FreeBayes calls each chunk padded by `scatter.call_padding` (default 1000 bp)
+  and keeps only records whose POS lies in the unpadded chunk, so a variant
+  near a chunk edge is called with its full haplotype window.
+* `tools/check_accuracy.py` also requires the truth count (tp_base + fn) to
+  match, and fails a stratum with no expected F1 when false positives appear.
+* CI job `lint` renamed `checks`; it also runs the tests.
+
+### Documented
+
+* Caller memo: the default rests on SNV accuracy and cost, with exact tests;
+  the easy-indel gap (2 against 9 of 196, p about 0.06) is marked suggestive.
+* One measured test-data size (5.5 MB), the five files a new caller touches,
+  the read count before fastp, and a coverage excerpt from the current tree.
+
 ## [1.0.1] - 2026-10-19
 
 ### Fixed

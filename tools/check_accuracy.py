@@ -23,7 +23,10 @@ KEY = ["sample", "caller", "stratum", "type"]
 
 def _truth(row: pd.Series, suffix: str) -> int | None:
     """tp_base + fn for one side of a merged row, or None when either is absent."""
-    values = [pd.to_numeric(row.get(f"{c}{suffix}"), errors="coerce") for c in ("tp_base", "fn")]
+    values = [
+        pd.to_numeric(row.get(f"{c}{suffix}", float("nan")), errors="coerce")
+        for c in ("tp_base", "fn")
+    ]
     if any(pd.isna(v) for v in values):
         return None
     return int(sum(values))
@@ -40,7 +43,7 @@ def compare(observed: pd.DataFrame, expected: pd.DataFrame, tolerance: float) ->
         if truth_exp is not None and truth_obs is not None and truth_obs != truth_exp:
             problems.append(f"{label}: truth count {truth_obs} != expected {truth_exp}")
         if pd.isna(f1_exp):
-            fp_obs = pd.to_numeric(r.get("fp_obs"), errors="coerce")
+            fp_obs = pd.to_numeric(r.get("fp_obs", float("nan")), errors="coerce")
             if pd.notna(fp_obs) and fp_obs > 0:
                 problems.append(f"{label}: {int(fp_obs)} false positives where none were expected")
             continue

@@ -1,0 +1,11 @@
+snakemake==9.27.0
+snakemake-executor-plugin-slurm==2.8.0
+snakefmt==2.1.0
+pandas==3.0.6
+matplotlib==3.11.2
+pytest==9.1.1
+ruff==0.17.1
+mypy==2.4.0
+pandas-stubs==3.0.5.260914
+types-PyYAML
+pre-commit

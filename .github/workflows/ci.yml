@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+
+jobs:
+  lint:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements-dev.txt
+      - run: snakemake --lint
+      - run: snakefmt --check workflow
+      - run: ruff check . && ruff format --check .
+      - run: mypy
+      - run: shellcheck tools/*.sh
+      - run: python -m pytest -q
+
+  test-workflow:
+    runs-on: ubuntu-24.04
+    needs: lint
+    steps:
+      - uses: actions/checkout@v4
+      - uses: conda-incubator/setup-miniconda@v3
+        with:
+          miniforge-version: latest
+          auto-activate-base: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements-dev.txt
+      - name: Run the bundled HG002 slice
+        shell: bash -el {0}
+        run: snakemake --profile profiles/test --cores 2
+      - name: Check accuracy did not regress
+        shell: bash -el {0}
+        run: python tools/check_accuracy.py .tests/integration/results/report/accuracy.tsv .tests/expected_accuracy.tsv
+      - name: Per-rule unit tests
+        shell: bash -el {0}
+        run: python -m pytest -q .tests/unit
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-run-logs
+          path: .tests/integration/logs

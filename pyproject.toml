@@ -1,0 +1,20 @@
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+extend-exclude = [".snakemake", ".tests/integration/.snakemake"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "N", "SIM", "RUF"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+files = ["workflow/scripts", "tools", "tests"]
+exclude = ["\\.snakemake/"]
+
+[[tool.mypy.overrides]]
+module = ["matplotlib", "matplotlib.*", "psutil", "snakemake", "snakemake.*"]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

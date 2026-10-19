@@ -1,17 +1,17 @@
 FROM condaforge/miniforge3@sha256:f752860f77bd417aa4db35be3d2e906fdb740fb80f40755ed651fff9e8873aad
 LABEL io.github.snakemake.containerized="true"
-LABEL io.github.snakemake.conda_env_hash="8feac5c729b8c388476ae6f870bc63f36885974c7be9c34c0ee795087bf35b6a"
+LABEL io.github.snakemake.conda_env_hash="97ff71c6d8a09469ddaa162441d43e5dd3be9261357bde3d28c37dad6a54293c"
 # Conda environment:
 #   source: workflow/envs/bcftools.yaml
-#   prefix: /conda-envs/0aa693e4f3299c185685b1e17c70d2ce
+#   prefix: /conda-envs/eda0be05dc995ef19c499b5a3815707a
 #   channels:
 #     - conda-forge
 #     - bioconda
 #     - nodefaults
 #   dependencies:
-#     - bcftools=1.23.1
-RUN mkdir -p /conda-envs/0aa693e4f3299c185685b1e17c70d2ce
-COPY workflow/envs/bcftools.yaml /conda-envs/0aa693e4f3299c185685b1e17c70d2ce/environment.yaml
+#     - bcftools=1.24
+RUN mkdir -p /conda-envs/eda0be05dc995ef19c499b5a3815707a
+COPY workflow/envs/bcftools.yaml /conda-envs/eda0be05dc995ef19c499b5a3815707a/environment.yaml
 # Conda environment:
 #   source: workflow/envs/bwa.yaml
 #   prefix: /conda-envs/863ea15d5cdb44d3ed178349d33ff5ce
@@ -109,7 +109,7 @@ COPY workflow/envs/python.yaml /conda-envs/2c4320f38dc57a106602f72d77797147/envi
 RUN mkdir -p /conda-envs/b7446a759507bd4367cd46bc4bf98c4a
 COPY workflow/envs/samtools.yaml /conda-envs/b7446a759507bd4367cd46bc4bf98c4a/environment.yaml
 
-RUN conda env create --prefix /conda-envs/0aa693e4f3299c185685b1e17c70d2ce --file /conda-envs/0aa693e4f3299c185685b1e17c70d2ce/environment.yaml && \
+RUN conda env create --prefix /conda-envs/eda0be05dc995ef19c499b5a3815707a --file /conda-envs/eda0be05dc995ef19c499b5a3815707a/environment.yaml && \
     conda env create --prefix /conda-envs/863ea15d5cdb44d3ed178349d33ff5ce --file /conda-envs/863ea15d5cdb44d3ed178349d33ff5ce/environment.yaml && \
     conda env create --prefix /conda-envs/16eb2e07c63233721fb979e7b6dd6efb --file /conda-envs/16eb2e07c63233721fb979e7b6dd6efb/environment.yaml && \
     conda env create --prefix /conda-envs/a8d69dac2431227983c93aacf938976a --file /conda-envs/a8d69dac2431227983c93aacf938976a/environment.yaml && \

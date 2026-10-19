@@ -1,0 +1,2 @@
+sample	fq1	fq2	truth_vcf	truth_bed
+HG002	resources/full/reads/HG002_R1.fastq.gz	resources/full/reads/HG002_R2.fastq.gz	resources/full/truth/HG002_v4.2.1_regions.vcf.gz	resources/full/truth/HG002_v4.2.1_benchmark.bed

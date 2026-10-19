@@ -1,0 +1,13 @@
+usage:
+  mandatory-flags:
+    desc: >-
+      Run with conda for software (--sdm conda) or with apptainer on a cluster
+      (--sdm conda apptainer). Choose a profile: profiles/local for a
+      workstation, profiles/slurm for a Slurm cluster, profiles/test for the
+      bundled HG002 slice.
+    flags: --sdm conda
+  software-stack-deployment:
+    conda: true
+    singularity: false
+    singularity+conda: true
+  report: true

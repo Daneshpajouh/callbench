@@ -1,0 +1,13 @@
+# Tiny HG002 slice in .tests/integration; runs in a few minutes on 2 cores.
+directory: .tests/integration
+cores: 2
+resources:
+  - mem_mb=6000
+default-resources:
+  - mem_mb=1000
+  - runtime=10
+software-deployment-method: conda
+conda-prefix: ../../.snakemake/conda
+retries: 1
+printshellcmds: true
+show-failed-logs: true

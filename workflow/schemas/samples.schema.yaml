@@ -1,0 +1,21 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+description: One row per sample. Truth columns may be empty for samples without a benchmark.
+type: object
+properties:
+  sample:
+    type: string
+    pattern: "^[A-Za-z0-9]+$"
+    description: Sample id; used in file names and as the VCF sample column.
+  fq1:
+    type: string
+    pattern: "\\.f(ast)?q\\.gz$"
+  fq2:
+    type: string
+    pattern: "\\.f(ast)?q\\.gz$"
+  truth_vcf:
+    type: string
+    description: GIAB benchmark VCF (bgzipped, tabix-indexed).
+  truth_bed:
+    type: string
+    description: GIAB benchmark regions BED.
+required: [sample, fq1, fq2]

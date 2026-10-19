@@ -1,0 +1,47 @@
+# Full-size run: HG002, two 2 Mb windows around BRCA2 (chr13) and BRCA1 (chr17).
+# resources/full is filled by tools/fetch_public_data.sh (see docs/data_sources.md).
+samples: config/samples.tsv
+
+reference:
+  fasta: resources/full/reference/GRCh38_chr13_chr17.fa
+  build: GRCh38
+
+# Evaluation intervals sit 50 kb inside the fetched read windows
+# (chr13:32,000,001-34,000,000 and chr17:42,500,001-44,500,000), so reads near
+# the edges of what is evaluated still have mates and neighbours to align with.
+regions: config/regions.bed
+
+aligner: bwa # bwa | minimap2
+
+callers:
+  - bcftools
+  - freebayes
+
+scatter:
+  chunk_size: 500000
+
+params:
+  fastp: "--detect_adapter_for_pe --length_required 50"
+  # -K fixes the batch size so output does not depend on the thread count.
+  bwa: "-K 100000000 -Y"
+  minimap2: ""
+  bcftools_mpileup: "-a FORMAT/AD,FORMAT/DP -q 20 -Q 20 --max-depth 500"
+  bcftools_call: ""
+  freebayes: "--min-mapping-quality 20 --min-base-quality 20 --min-alternate-fraction 0.2"
+  vcfeval: "--ref-overlap"
+  mosdepth: "--no-per-base"
+
+filters:
+  bcftools: "QUAL>=20"
+  freebayes: "QUAL>=20"
+
+evaluation:
+  stratifications:
+    low_complexity: resources/full/stratifications/GRCh38_AllTandemRepeatsandHomopolymers_slop5.bed.gz
+    segdups: resources/full/stratifications/GRCh38_segdups.bed.gz
+    low_mappability: resources/full/stratifications/GRCh38_lowmappabilityall.bed.gz
+    all_difficult: resources/full/stratifications/GRCh38_alldifficultregions.bed.gz
+    not_difficult: resources/full/stratifications/GRCh38_notinalldifficultregions.bed.gz
+
+clinvar:
+  vcf: resources/full/clinvar/clinvar.vcf.gz

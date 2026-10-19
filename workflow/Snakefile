@@ -1,0 +1,25 @@
+from snakemake.utils import min_version
+
+min_version("9.0")
+
+
+configfile: "config/config.yaml"
+
+
+report: "report/workflow.rst"
+
+
+include: "rules/common.smk"
+include: "rules/ref.smk"
+include: "rules/qc.smk"
+include: "rules/align.smk"
+include: "rules/call.smk"
+include: "rules/evaluate.smk"
+include: "rules/annotate.smk"
+include: "rules/report.smk"
+
+
+rule all:
+    default_target: True
+    input:
+        all_targets(),

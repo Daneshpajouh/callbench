@@ -1,0 +1,14 @@
+# Workstation profile. Eight cores and 24 GB is what the numbers in
+# docs/validation.md were measured with.
+cores: 8
+resources:
+  - mem_mb=24000
+default-resources:
+  - mem_mb=1000
+  - runtime=30
+software-deployment-method: conda
+conda-prefix: .snakemake/conda
+retries: 1
+rerun-incomplete: true
+printshellcmds: true
+show-failed-logs: true

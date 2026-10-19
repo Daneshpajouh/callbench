@@ -1,0 +1,84 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+description: Configuration for germline-benchmark-smk
+type: object
+properties:
+  samples:
+    type: string
+    description: Path to the tab-separated samplesheet.
+  reference:
+    type: object
+    properties:
+      fasta:
+        type: string
+        description: Uncompressed FASTA; indexes are built next to results/ref/.
+      build:
+        type: string
+        enum: [GRCh38]
+    required: [fasta, build]
+  regions:
+    type: string
+    description: >-
+      BED of evaluation intervals. Reads must extend past these intervals so
+      that variants near the edges have alignment context.
+  aligner:
+    type: string
+    enum: [bwa, minimap2]
+    default: bwa
+  callers:
+    type: array
+    items:
+      type: string
+      enum: [bcftools, freebayes]
+    minItems: 1
+    uniqueItems: true
+  scatter:
+    type: object
+    properties:
+      chunk_size:
+        type: integer
+        minimum: 10000
+        description: Maximum chunk length in bp for scattered calling.
+    required: [chunk_size]
+  params:
+    type: object
+    properties:
+      fastp:
+        type: string
+      bwa:
+        type: string
+      minimap2:
+        type: string
+      bcftools_mpileup:
+        type: string
+      bcftools_call:
+        type: string
+      freebayes:
+        type: string
+      vcfeval:
+        type: string
+      mosdepth:
+        type: string
+  filters:
+    type: object
+    description: >-
+      bcftools expression per caller; records that fail it are dropped before
+      evaluation. The same threshold for every caller keeps the comparison fair.
+    additionalProperties:
+      type: string
+  evaluation:
+    type: object
+    properties:
+      stratifications:
+        type: object
+        description: Stratum name to BED (plain or gzipped) path.
+        additionalProperties:
+          type: string
+    required: [stratifications]
+  clinvar:
+    type: object
+    properties:
+      vcf:
+        type: string
+        description: ClinVar GRCh38 VCF (bgzipped, tabix-indexed, no chr prefix).
+    required: [vcf]
+required: [samples, reference, regions, aligner, callers, scatter, filters, evaluation, clinvar]

@@ -1,0 +1,22 @@
+# Slurm profile for snakemake-executor-plugin-slurm (pip install
+# snakemake-executor-plugin-slurm). Set slurm_account and slurm_partition for
+# your site before the first run; jobs are submitted with the per-rule mem_mb,
+# runtime and threads from workflow/rules/*.smk.
+executor: slurm
+jobs: 200
+max-jobs-per-second: 5
+latency-wait: 60
+retries: 2
+rerun-incomplete: true
+software-deployment-method:
+  - conda
+  - apptainer
+default-resources:
+  slurm_account: "set-me"
+  slurm_partition: "set-me"
+  mem_mb: 2000
+  runtime: 60
+set-resources:
+  bwa_index:
+    runtime: 240
+show-failed-logs: true

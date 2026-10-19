@@ -1,0 +1,94 @@
+name: Bug report
+description: Report a failed rule, a wrong or missing output, or a crash.
+title: "Bug: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        A report that names the failed rule and includes its log can usually be reproduced without further questions. Fill in every required field.
+
+        Do not paste credentials, tokens or non-public sample data. HG002 and the other Genome in a Bottle samples are public and can be shared.
+  - type: input
+    id: version
+    attributes:
+      label: Workflow version or commit
+      description: "The release tag (for example v1.0.0) or the short commit hash from git rev-parse --short HEAD."
+    validations:
+      required: true
+  - type: textarea
+    id: command
+    attributes:
+      label: Command run
+      description: "The full command line exactly as you ran it, including the profile and any --config or --set-resources options."
+      render: shell
+    validations:
+      required: true
+  - type: dropdown
+    id: profile
+    attributes:
+      label: Profile used
+      options:
+        - local
+        - slurm
+        - test
+        - Other or edited profile (describe it in the command box)
+    validations:
+      required: true
+  - type: input
+    id: rule
+    attributes:
+      label: Rule that failed
+      description: "The rule name printed after 'Error in rule' in the Snakemake output. Leave blank if no rule failed."
+  - type: input
+    id: rule-log
+    attributes:
+      label: Rule log path
+      description: "Path of the log file of the failed job, under logs/<rule>/. Snakemake prints it as the log line of the error message. Leave blank if no rule failed."
+  - type: textarea
+    id: log-excerpt
+    attributes:
+      label: Log excerpt
+      description: "The last 50 lines of the rule log, or the first error if the log is shorter."
+      render: text
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behaviour
+      description: "What you expected to happen, with the output file or table you expected to see."
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behaviour
+      description: "What happened instead. Quote the error message or give the wrong value and where you found it."
+    validations:
+      required: true
+  - type: input
+    id: os
+    attributes:
+      label: Operating system and version
+      description: "For example the output of uname -sr, or the Linux distribution and release."
+    validations:
+      required: true
+  - type: input
+    id: snakemake-version
+    attributes:
+      label: Snakemake version
+      description: "The output of snakemake --version."
+    validations:
+      required: true
+  - type: dropdown
+    id: deployment
+    attributes:
+      label: Software deployment
+      description: "How the rule tools were provided."
+      options:
+        - conda
+        - container
+        - conda inside a container
+        - Tools on PATH, no environment management
+    validations:
+      required: true

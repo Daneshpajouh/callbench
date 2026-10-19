@@ -1,0 +1,26 @@
+{
+  "title": "germline-benchmark-smk",
+  "version": "1.0.0",
+  "upload_type": "software",
+  "description": "<p>A Snakemake 9 workflow that calls germline small variants from short reads with bcftools and FreeBayes, benchmarks the calls against the Genome in a Bottle HG002 v4.2.1 truth set with RTG vcfeval, stratifies the results by GA4GH/GIAB v3.3 stratification regions, and annotates the calls with ClinVar.</p><p>Each rule runs in its own conda environment. Execution profiles are provided for a local machine, a Slurm cluster and a small test run.</p>",
+  "creators": [
+    {
+      "name": "Daneshpajouh, Amir"
+    }
+  ],
+  "license": "Apache-2.0",
+  "keywords": [
+    "Snakemake",
+    "germline variant calling",
+    "small variants",
+    "variant calling benchmark",
+    "bcftools",
+    "FreeBayes",
+    "RTG vcfeval",
+    "Genome in a Bottle",
+    "HG002",
+    "GA4GH benchmarking",
+    "ClinVar",
+    "reproducible workflows"
+  ]
+}

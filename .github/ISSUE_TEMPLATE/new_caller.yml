@@ -1,0 +1,112 @@
+name: New caller
+description: Propose a germline small-variant caller to add to the benchmark.
+title: "New caller: "
+labels:
+  - enhancement
+  - new caller
+body:
+  - type: markdown
+    attributes:
+      value: |
+        A caller is added when it meets the output contract below and the evidence shows how it compares with the current default caller on HG002. Read the [caller evaluation guide](https://github.com/Daneshpajouh/germline-benchmark-smk/blob/main/docs/evaluation/caller_evaluation.md) before you fill this in.
+
+        Adding a caller is a MINOR release.
+  - type: input
+    id: caller
+    attributes:
+      label: Caller name and version
+      description: "The exact version you tested."
+    validations:
+      required: true
+  - type: input
+    id: licence
+    attributes:
+      label: Licence
+      description: "The SPDX identifier, with a link to the licence file in the caller's repository."
+    validations:
+      required: true
+  - type: input
+    id: container
+    attributes:
+      label: Container image with digest
+      description: "The image reference pinned by digest, in the form registry/name@sha256:<64 hexadecimal characters>. A tag alone is not enough."
+    validations:
+      required: true
+  - type: input
+    id: bioconda
+    attributes:
+      label: Bioconda package
+      description: "The package name and exact version, with a link to the recipe."
+    validations:
+      required: true
+  - type: dropdown
+    id: platforms
+    attributes:
+      label: Platforms it runs on
+      description: "Select every platform where you have run the caller."
+      multiple: true
+      options:
+        - linux-64
+        - linux-aarch64
+        - osx-64
+        - osx-arm64
+        - Other (name it in the notes)
+    validations:
+      required: true
+  - type: checkboxes
+    id: contract
+    attributes:
+      label: Output contract
+      description: "Every item must be true for the caller to be accepted."
+      options:
+        - label: "The caller writes a bgzipped, indexed VCF for each scatter chunk at results/calls/{sample}/{caller}/chunks/{chunk}.vcf.gz."
+          required: true
+        - label: "Each VCF has a single sample column, named as the sample."
+          required: true
+        - label: "The GT field is present."
+          required: true
+        - label: "The output passes the normalisation rule."
+          required: true
+        - label: "Runtime and memory are captured by the benchmark directive of the calling rule."
+          required: true
+  - type: textarea
+    id: accuracy
+    attributes:
+      label: Accuracy evidence
+      description: "vcfeval precision, recall and F1 for SNVs and indels on HG002 (v4.2.1 truth), for the new caller and for the current default caller, on the same benchmark regions."
+      placeholder: |
+        | Caller | Variant type | Precision | Recall | F1 |
+        | --- | --- | --- | --- | --- |
+        | new caller | SNV | | | |
+        | new caller | indel | | | |
+        | default caller | SNV | | | |
+        | default caller | indel | | | |
+    validations:
+      required: true
+  - type: input
+    id: memory
+    attributes:
+      label: Peak memory
+      description: "The largest max_rss in the benchmark files of the calling rule, in GB, with the chunk it came from."
+    validations:
+      required: true
+  - type: input
+    id: runtime
+    attributes:
+      label: Runtime
+      description: "Wall-clock seconds from the benchmark files, for the same run, with the thread count."
+    validations:
+      required: true
+  - type: textarea
+    id: run
+    attributes:
+      label: Evidence run
+      description: "The workflow commit, the profile and the command used to produce the numbers above."
+      render: shell
+    validations:
+      required: true
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes
+      description: "Known limits of the caller, such as variant types it does not call or settings you changed from the defaults."

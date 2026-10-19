@@ -1,0 +1,62 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out the tagged commit
+        uses: actions/checkout@v4
+
+      - name: Check that the tag matches the recorded version
+        run: |
+          tag_version="${GITHUB_REF_NAME#v}"
+          cff_version="$(sed -n -E 's/^version: *"?([0-9]+\.[0-9]+\.[0-9]+)"?[[:space:]]*$/\1/p' CITATION.cff)"
+          zenodo_version="$(python3 -c 'import json; print(json.load(open(".zenodo.json"))["version"])')"
+          echo "Tag: ${tag_version}"
+          echo "CITATION.cff: ${cff_version}"
+          echo ".zenodo.json: ${zenodo_version}"
+          if [ "${tag_version}" = "${cff_version}" ] && [ "${tag_version}" = "${zenodo_version}" ]; then
+            echo "The tag matches the recorded version."
+          else
+            echo "The tag ${GITHUB_REF_NAME} does not match the version in CITATION.cff or .zenodo.json." >&2
+            exit 1
+          fi
+
+      - name: Extract the changelog section for this version
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          notes="${RUNNER_TEMP}/release-notes.md"
+          awk -v ver="${version}" '
+            /^## / {
+              if (found) exit
+              heading = $0
+              sub(/^## +\[?/, "", heading)
+              sub(/\].*$/, "", heading)
+              sub(/ .*$/, "", heading)
+              if (heading == ver) found = 1
+              next
+            }
+            found { print }
+          ' CHANGELOG.md > "${notes}"
+          if grep -q '[^[:space:]]' "${notes}"; then
+            echo "Release notes for ${version}:"
+            cat "${notes}"
+          else
+            echo "CHANGELOG.md has no entries under a heading for version ${version}." >&2
+            exit 1
+          fi
+
+      - name: Create the GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: ${{ github.ref_name }}
+          body_path: ${{ runner.temp }}/release-notes.md

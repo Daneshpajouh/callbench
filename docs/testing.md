@@ -45,9 +45,11 @@ was flagged by float rounding.
 
 ## Workflow static tests
 
-`tests/workflow/test_dry_run.py` runs `snakemake -n` on `config/config.yaml`
-(skipped when the full-size data is not present) and checks that `bwa_mem`
-and `vcfeval` are scheduled. It found a real bug: `unpack()` of a checkpoint
+`tests/workflow/test_dry_run.py` runs `snakemake -n` on `config/config.yaml`:
+in this checkout where the full-size data has been fetched, and elsewhere,
+CI included, in a temporary working directory that holds an empty stand-in
+for every file the config and the sample sheet name under `resources/`. It
+checks that `bwa_mem` and `vcfeval` are scheduled. It found a real bug: `unpack()` of a checkpoint
 input function left `gather_calls` without a named input during a dry run.
 `test_lint.py` runs `snakemake --lint` and `snakefmt --check`. These tests
 are marked `workflow` and deselected by plain `pytest`.

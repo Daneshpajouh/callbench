@@ -25,6 +25,9 @@ schema is MAJOR, a new caller, rule or report section is MINOR, a fix is PATCH.
 * CI installs bcftools 1.24 with bgzip and tabix and fails if a test that
   needs them skips; before, CI did not install them, so those tests could
   skip unseen.
+* The dry run of the full configuration ran only where the full-size data
+  had been fetched, so CI always skipped it. It now runs on empty stand-ins
+  for the files under `resources/`, in CI too (#4).
 * A tagged release publishes nothing until the CI checks pass and the
   integration test passes inside the new image. Before, the release and the
   image were published with no test.

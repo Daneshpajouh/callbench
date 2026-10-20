@@ -22,5 +22,5 @@ testpaths = ["tests"]
 # plain pytest run skips them; select them with `-m workflow`.
 addopts = "-m 'not workflow'"
 markers = [
-    "workflow: runs snakemake on this checkout (dry run, lint); slow, needs the reference",
+    "workflow: runs snakemake on the workflow (dry run, lint); slower than the unit tests",
 ]

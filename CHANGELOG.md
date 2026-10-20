@@ -39,6 +39,10 @@ schema is MAJOR, a new caller, rule or report section is MINOR, a fix is PATCH.
 
 ### Documented
 
+* `CONTRIBUTING.md` is cut to running the checks, reporting a problem, and
+  versions and releases; its branch and commit rules were written for a
+  team. `.github/CODEOWNERS`, which named only the maintainer, is removed
+  (#5).
 * Real-data steps name the host tools `make data` needs and the manual
   ClinVar download; the quick start names Python 3.12.
 * The validation report and caller memo name bcftools 1.24 and v1.0.2,

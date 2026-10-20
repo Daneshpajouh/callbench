@@ -70,7 +70,6 @@ rule stratified_metrics:
         tp_base="results/evaluation/{sample}/{caller}/vcfeval/tp-baseline.vcf.gz",
         fp="results/evaluation/{sample}/{caller}/vcfeval/fp.vcf.gz",
         fn="results/evaluation/{sample}/{caller}/vcfeval/fn.vcf.gz",
-        bed="results/evaluation/{sample}/confident_regions.bed",
         strata=expand("results/evaluation/strata/{stratum}.bed", stratum=STRATA),
     output:
         "results/evaluation/{sample}/{caller}/stratified_metrics.tsv",

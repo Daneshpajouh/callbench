@@ -30,6 +30,9 @@ schema is MAJOR, a new caller, rule or report section is MINOR, a fix is PATCH.
   image were published with no test.
 * The F1 figure has one legend outside the panels, which covered the tallest
   bars, and each caller keeps its colour when it has no values in a panel.
+* `stratified_metrics` no longer declares the confident-regions BED, which
+  its script never read; vcfeval already limits its outputs to those
+  regions (#2).
 
 ### Documented
 

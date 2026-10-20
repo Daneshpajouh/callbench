@@ -3,8 +3,8 @@
 Benchmark files live at benchmarks/<rule>/<wildcards>.tsv (or
 benchmarks/<rule>.tsv for rules without wildcards). Columns kept: wall time
 (s), peak resident memory (max_rss, MB), CPU time (s) and mean load.
-Scattered rules are also summed per sample so the cost of one genome is
-visible next to the cost of one chunk.
+A second table sums each rule over all its jobs, so a scattered rule's total
+sits next to its longest single chunk.
 """
 
 from pathlib import Path

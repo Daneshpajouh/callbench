@@ -162,3 +162,41 @@ def test_runtime_figure_draws_one_bar_per_rule_in_sorted_order(tmp_path: Path) -
     (ax,) = plt.gcf().axes
     assert [p.get_width() for p in ax.patches if isinstance(p, Rectangle)] == [3.0, 27.3, 120.5]
     assert [t.get_text() for t in ax.get_yticklabels()] == ["qc", "call", "align"]
+
+
+def test_f1_figure_legend_covers_no_bars(tmp_path: Path) -> None:
+    f1_figure(
+        _acc(
+            [
+                ("HG002", "bcftools", "all", "SNV", 0.99),
+                ("HG002", "freebayes", "all", "SNV", 0.98),
+                ("HG002", "bcftools", "all", "INDEL", 0.9),
+                ("HG002", "freebayes", "all", "INDEL", 0.93),
+            ]
+        ),
+        str(tmp_path / "f1.svg"),
+    )
+    fig = plt.gcf()
+    renderer = fig.canvas.get_renderer()  # type: ignore[attr-defined]
+    assert all(ax.get_legend() is None for ax in fig.axes)
+    (legend,) = fig.legends
+    box = legend.get_window_extent(renderer)
+    assert not any(box.overlaps(ax.get_window_extent(renderer)) for ax in fig.axes)
+    assert [t.get_text() for t in legend.get_texts()] == ["bcftools", "freebayes"]
+
+
+def test_f1_figure_keeps_each_callers_colour_when_one_is_missing(tmp_path: Path) -> None:
+    acc = _acc(
+        [
+            ("HG002", "bcftools", "all", "SNV", 0.99),
+            ("HG002", "freebayes", "all", "SNV", 0.98),
+            ("HG002", "freebayes", "all", "INDEL", 0.93),
+        ]
+    )
+    f1_figure(acc, str(tmp_path / "f1.svg"))
+    snv, indel = plt.gcf().axes
+    snv_colours = [p.get_facecolor() for p in snv.patches if isinstance(p, Rectangle)]
+    indel_colours = [p.get_facecolor() for p in indel.patches if isinstance(p, Rectangle)]
+    # SNV bars are bcftools then freebayes; the only INDEL bar is freebayes.
+    assert indel_colours == [snv_colours[1]]
+    assert snv_colours[0] != snv_colours[1]

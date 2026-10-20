@@ -14,7 +14,12 @@ def f1_figure(acc: pd.DataFrame, out: str) -> None:
     acc = acc.copy()
     acc["f1"] = pd.to_numeric(acc["f1"], errors="coerce")
     types = ["SNV", "INDEL"]
-    fig, axes = plt.subplots(1, 2, figsize=(11, 4), sharey=True)
+    # One colour per caller across both panels, so a caller with no values in
+    # one panel does not shift the colours of the others.
+    cycle = plt.rcParams["axes.prop_cycle"].by_key()["color"]
+    callers = sorted(acc["caller"].dropna().unique())
+    colour = {c: cycle[i % len(cycle)] for i, c in enumerate(callers)}
+    fig, axes = plt.subplots(1, 2, figsize=(11, 4), sharey=True, layout="constrained")
     for ax, vtype in zip(axes, types, strict=True):
         sub = acc[acc["type"] == vtype]
         pivot = sub.pivot_table(index="stratum", columns="caller", values="f1", aggfunc="mean")
@@ -24,13 +29,24 @@ def f1_figure(acc: pd.DataFrame, out: str) -> None:
             # needs to render so the report build does not fail.
             ax.text(0.5, 0.5, "no F1 values", ha="center", va="center", transform=ax.transAxes)
         else:
-            pivot.plot.bar(ax=ax, rot=30)
+            pivot.plot.bar(ax=ax, rot=30, color=[colour[c] for c in pivot.columns])
         ax.set_title(f"{vtype} F1 (mean over samples)")
         ax.set_ylim(0, 1)
         ax.set_xlabel("")
         ax.grid(axis="y", alpha=0.3)
     axes[0].set_ylabel("F1")
-    fig.tight_layout()
+    # pandas puts a legend inside each panel, where it covered the tallest
+    # bars. One legend outside the panels covers nothing.
+    entries: dict[str, Any] = {}
+    for ax in axes:
+        handles, labels = ax.get_legend_handles_labels()
+        for handle, label in zip(handles, labels, strict=True):
+            entries.setdefault(label, handle)
+        legend = ax.get_legend()
+        if legend is not None:
+            legend.remove()
+    if entries:
+        fig.legend(entries.values(), entries.keys(), title="caller", loc="outside right upper")
     fig.savefig(out)
 
 

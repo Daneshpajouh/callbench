@@ -9,9 +9,9 @@ comes from the output file named next to it.
   RAM, macOS 27. Snakemake 9.27.0 under `nice -n 10`, 8 cores, 24 GB budget.
 * Software from the pinned conda environments in `workflow/envs/`, all
   native osx-arm64 builds from bioconda and conda-forge: fastp 1.4.0,
-  bwa 0.7.19, samtools 1.23.1, mosdepth 0.3.14, bcftools 1.23.1 (1.21 in the
-  FreeBayes environment), FreeBayes 1.3.10, RTG Tools 3.13. From v1.0.1 the bcftools
-  environment pins 1.24; the rerun gave identical accuracy
+  bwa 0.7.19, samtools 1.23.1, mosdepth 0.3.14, bcftools 1.24 (1.21 in the
+  FreeBayes environment), FreeBayes 1.3.10, RTG Tools 3.13. v1.0.0 used
+  bcftools 1.23.1; the 1.24 rerun gave identical accuracy
   (`docs/changes/2026-10-19-bcftools-1.24.md`).
 * Command:
 

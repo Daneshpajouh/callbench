@@ -65,7 +65,7 @@ Snakemake's `--generate-unit-tests` was tried on this run. It produced 28
 per-rule tests and copied 47 MB of inputs and expected outputs; with the
 test data outside the working directory the sampled tests could not find
 their inputs, and after moving the data inside, a run of all 28 did not
-finish within 290 s on this machine. They are not shipped in v1.0.0; making
+finish within 290 s on this machine. They are not shipped; making
 them small and fast is part of milestone M1 in `ROADMAP.md`.
 
 ## Validation

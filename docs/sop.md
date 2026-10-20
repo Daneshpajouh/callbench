@@ -1,16 +1,16 @@
 # Standard operating procedure: germline benchmark run
 
-Version 1.0.0, 2026-10-19. Owner: Amir Daneshpajouh.
+Version 1.0.2, 2026-10-19. Owner: Amir Daneshpajouh.
 
 This SOP covers one benchmark run: from a samplesheet of paired FASTQ files
 with GIAB truth sets to an HTML report with accuracy, runtime and memory per
-caller. It assumes a Unix shell, Python 3.12 or later and conda 24.7.1 or
-later on `PATH`.
+caller. It assumes a Unix shell, Python 3.12 (the version CI tests) and
+conda 24.7.1 or later on `PATH`.
 
 ## 1. Prepare the software
 
 1. Clone the repository and check out a release tag, not a branch:
-   `git checkout v1.0.0`.
+   `git checkout v1.0.2`.
 2. Create the Python environment that runs Snakemake:
    `python3 -m venv .venv && .venv/bin/pip install -r requirements-dev.txt`.
 3. Confirm the versions: `.venv/bin/snakemake --version` prints `9.27.0`;

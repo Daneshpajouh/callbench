@@ -1,8 +1,8 @@
 # Caller evaluation: which germline small-variant caller to deploy
 
 Internal technical memo. Author: Amir Daneshpajouh. Date: 2026-10-19.
-Status: recommendation for v1.0.0; revisit at milestone M3 (GATK and
-DeepVariant adapters).
+Status: recommendation, numbers from the v1.0.2 run; revisit at milestone M3
+(GATK and DeepVariant adapters).
 
 ## Decision asked for
 
@@ -24,8 +24,9 @@ caller be added to an existing production pipeline without disturbing it.
 
 ## Candidates
 
-Run and measured in v1.0.0: bcftools 1.23.1 (`mpileup | call -m`) and
-FreeBayes 1.3.10. Not run in v1.0.0: GATK HaplotypeCaller and DeepVariant.
+Run and measured: bcftools 1.24 (`mpileup | call -m`; v1.0.0 used 1.23.1 with
+identical accuracy) and FreeBayes 1.3.10. Not run: GATK HaplotypeCaller and
+DeepVariant.
 Both ship as linux/amd64 containers only; on the Apple Silicon build host they
 would run under emulation and their runtimes would not represent a Linux
 cluster. They are milestone M3 in `ROADMAP.md`, to be measured on native

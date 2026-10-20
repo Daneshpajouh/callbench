@@ -5,9 +5,11 @@ File paths are relative to the repository root.
 
 ## 1. Entry point and configuration
 
-`workflow/Snakefile` is 20 lines: it pins the minimum Snakemake version,
-loads `config/config.yaml`, names the report template and includes one rule
-file per stage. The order of the includes is the order of the pipeline.
+`workflow/Snakefile` pins the minimum Snakemake version, loads
+`config/config.yaml`, names the report template and includes one rule file per
+stage; the order of the includes is the order of the pipeline. Its `onstart`
+and `onsuccess`/`onerror` hooks write the run manifest and run summary
+(`workflow/scripts/runlog.py`).
 
 `workflow/rules/common.smk` runs first. Read it before any rule file:
 
@@ -16,9 +18,9 @@ file per stage. The order of the includes is the order of the pipeline.
   job is planned. A misspelled caller name or a sample id with a hyphen fails
   here, not three hours into a run.
 * `wildcard_constraints` limit `{sample}`, `{caller}` and `{stratum}` to the
-  values in the config and `{chunk}` to four digits. Without them a pattern
-  such as `results/calls/{sample}/{caller}.raw.vcf.gz` could match a sample
-  called `HG002/bcftools`.
+  values in the config and `{chunk}` to four or more digits. Without them a
+  pattern such as `results/calls/{sample}/{caller}.raw.vcf.gz` could match a
+  sample called `HG002/bcftools`.
 * Input functions (`get_fastqs`, `get_truth`, `read_group`) turn wildcards
   into paths from the samplesheet, so adding a sample is a one-line change to
   `config/samples.tsv`.
@@ -48,14 +50,15 @@ count, which keeps the regression test deterministic.
 `scatter_intervals` is a checkpoint. It splits the evaluation intervals into
 chunks of at most `scatter.chunk_size` bp (500 kb for the full run, 50 kb for
 the test), and the number of calling jobs is only known after it runs.
-`gathered_chunks()` in `common.smk` calls `checkpoints.scatter_intervals.get()`
-to read the chunk list back.
+`scatter_chunks()` in `common.smk` calls `checkpoints.scatter_intervals.get()`
+to read the chunk list back, and `gathered_chunks()` builds the per-chunk VCF
+and index paths from it.
 
 Each caller is an adapter rule with one output contract: a bgzipped, indexed,
 single-sample VCF per chunk at `results/calls/{sample}/{caller}/chunks/`.
-Everything after `gather_calls` is caller-agnostic. Adding a caller means one
-rule, one env file and one entry in the schema enum; see
-`docs/evaluation/caller_evaluation.md`.
+Everything after `gather_calls` is caller-agnostic. Adding a caller touches
+five files (the adapter rule, an env file, the schema enum, the config and the
+expected accuracy table); see `docs/evaluation/caller_evaluation.md`.
 
 `gather_calls` uses `bcftools concat --allow-overlaps --remove-duplicates`
 because a deletion that starts near a chunk boundary can be reported by both

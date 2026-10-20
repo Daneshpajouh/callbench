@@ -1,3 +1,4 @@
+import re
 import shutil
 import subprocess
 from pathlib import Path
@@ -7,6 +8,7 @@ import pytest
 from smk_stub import DATA, Wildcards, make_smk, run_as_rule_script
 from stratified_metrics import Counts, count_records, fmt
 
+ROOT = Path(__file__).resolve().parents[2]
 BCFTOOLS = shutil.which("bcftools")
 BGZIP = shutil.which("bgzip")
 TABIX = shutil.which("tabix")
@@ -194,3 +196,17 @@ def test_rule_script_logs_the_file_that_bcftools_rejected(tmp_path: Path) -> Non
     log = (tmp_path / "stratified_metrics.log").read_text()
     assert "ERROR rule=stratified_metrics sample=HG002 ValueError: " in log
     assert "malformed_columns.vcf.gz" in log
+
+
+def test_rule_declares_only_inputs_the_script_reads() -> None:
+    # The vcfeval outputs are already limited to the confident regions, so the
+    # rule needs no BED of its own; an input the script never reads only
+    # suggests a filter that is not applied.
+    rule = (ROOT / "workflow" / "rules" / "evaluate.smk").read_text()
+    found = re.search(r"^rule stratified_metrics:\n(.*?)^    output:", rule, re.M | re.S)
+    assert found is not None
+    names = re.findall(r"^        (\w+)=", found.group(1), re.M)
+    script = (ROOT / "workflow" / "scripts" / "stratified_metrics.py").read_text()
+    assert names == ["tp", "tp_base", "fp", "fn", "strata"]
+    # \b so that smk.input.tp_base does not count as a read of tp.
+    assert [n for n in names if not re.search(rf"smk\.input\.{n}\b", script)] == []

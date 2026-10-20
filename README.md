@@ -94,7 +94,9 @@ On a Slurm cluster, set `slurm_account` and `slurm_partition` in
 `profiles/slurm/config.v8+.yaml` and run
 `.venv/bin/snakemake --profile profiles/slurm`.
 
-### Before and after a real run
+### Operating procedure for a real run
+
+The checks to make before and after each run on real data:
 
 * Compare `MANIFEST.tsv`, which `make data` writes, with the SHA-256 values
   in `docs/data_sources.md`. A mismatch on reads or truth files means the

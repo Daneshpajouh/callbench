@@ -30,6 +30,6 @@ Reason for the change:
 - [ ] Test-profile workflow run passed
 - [ ] Benchmark table changes are explained above (if accuracy moved, by how much and why)
 - [ ] CHANGELOG.md entry added under Unreleased
-- [ ] Docs updated (SOP, validation)
+- [ ] Docs updated (README, validation)
 - [ ] No data files over 5 MB committed
 - [ ] No credentials, tokens or keys committed

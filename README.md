@@ -40,6 +40,13 @@ Per-stratum numbers, runtime and memory are in `docs/validation.md`; the deploym
 `docs/evaluation/caller_evaluation.md`. These numbers describe two 1.9 Mb windows
 picked for their genes, not the whole genome.
 
+![F1 by GIAB stratum for bcftools and FreeBayes, SNVs and indels](docs/results-v1.0.2/accuracy_f1.png)
+
+F1 per GIAB stratum from `docs/results-v1.0.2/accuracy.tsv`, drawn by
+`f1_figure` in `workflow/scripts/plots.py`, the code that makes this figure in
+the HTML report. Indels in low-mappability regions and segmental duplications
+are where both callers lose most.
+
 ## Quick start (bundled test data)
 
 Needs Python 3.12 (what CI uses) and conda 24.7.1 or later on `PATH`. On
@@ -85,8 +92,26 @@ scripted downloads in robots.txt. Before `make run`, put the GRCh38
 
 On a Slurm cluster, set `slurm_account` and `slurm_partition` in
 `profiles/slurm/config.v8+.yaml` and run
-`.venv/bin/snakemake --profile profiles/slurm`. The step-by-step procedure,
-including checks before and after a run, is `docs/sop.md`.
+`.venv/bin/snakemake --profile profiles/slurm`.
+
+### Before and after a real run
+
+* Compare `MANIFEST.tsv`, which `make data` writes, with the SHA-256 values
+  in `docs/data_sources.md`. A mismatch on reads or truth files means the
+  source changed.
+* `--conda-create-envs-only` does not build the calling environments: those
+  rules sit behind the scatter checkpoint and are not in the DAG until it has
+  run. A solver failure then stops the run halfway (it happened once; see
+  `docs/operations/runbook.md`). Run `make test-workflow` first, which builds
+  every environment.
+* After the run, compare the `all` rows of `results/report/accuracy.tsv`
+  with `docs/validation.md`. A drop of more than 0.005 in F1 for any caller
+  and type is a regression. Peak memory per rule in
+  `results/report/profiling.by_rule.tsv` should stay under the `mem_mb` the
+  rule asked for; if not, raise the coefficients in
+  `workflow/rules/common.smk`.
+* To rerun an analysis later you need the report, `config/`, the inputs'
+  `MANIFEST.tsv` and the git commit.
 
 ## Containers
 
@@ -124,6 +149,10 @@ FASTQ -> fastp -> bwa mem | fixmate | sort -> markdup -> samtools stats, mosdept
 ```
 
 Software comes from pinned per-rule conda environments in `workflow/envs/`.
+`bwa mem -K 100000000` fixes the batch size, so the alignments do not depend on
+the thread count and the regression test stays deterministic. The gather step
+uses `bcftools concat --allow-overlaps --remove-duplicates`, because a deletion
+that starts near a chunk boundary can be called in both neighbouring chunks.
 Each heavy rule has a `benchmark` directive; `results/report/profiling.tsv`
 collects them. Memory and runtime requests are functions of input size and
 grow on retry. The config and samplesheet are checked against JSON Schemas
@@ -142,15 +171,14 @@ before a job is planned.
 
 ## Documentation
 
-* `docs/sop.md`: operating procedure for one run.
 * `docs/validation.md`: accuracy against GIAB with commands and limits.
 * `docs/testing.md`: test layers and how to run each.
 * `docs/evaluation/caller_evaluation.md`: which caller to deploy and why.
 * `docs/capacity_planning.md`: measured costs and a labelled projection to
   hundreds of genomes on Slurm.
-* `docs/code_walkthrough.md`: a reviewer's tour of the code.
 * `docs/data_sources.md`: every input with URL, size and SHA-256.
-* `docs/operations/`: runbook and postmortems.
+* `docs/operations/`: failures met while building v1.0.0, with causes and
+  fixes, and the one postmortem.
 * `ROADMAP.md`, `CHANGELOG.md`, `CONTRIBUTING.md`.
 
 ## Licence and citation

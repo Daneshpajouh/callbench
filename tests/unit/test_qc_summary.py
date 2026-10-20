@@ -93,10 +93,56 @@ def test_fastp_metrics_errors_name_the_file(tmp_path: Path, text: str, message: 
         fastp_metrics(_write(tmp_path, "f.json", text))
 
 
+# Every SN key samtools_sn reads, in the order samtools stats writes them.
+FULL_SN = (
+    "SN\treads mapped:\t1000\n"
+    "SN\treads properly paired:\t900\n"
+    "SN\treads duplicated:\t20\n"
+    "SN\terror rate:\t1.5e-03\t# mismatches\n"
+    "SN\tinsert size average:\t312.5\n"
+)
+FULL_VALUES = {
+    "reads_mapped": 1000.0,
+    "reads_duplicated": 20.0,
+    "error_rate": 0.0015,
+    "insert_size_mean": 312.5,
+    "reads_properly_paired": 900.0,
+}
+
+
 def test_samtools_sn_picks_named_fields(tmp_path: Path) -> None:
     p = tmp_path / "s.txt"
-    p.write_text("SN\treads mapped:\t1000\nSN\terror rate:\t1.5e-03\t# mismatches\nFFQ\t1\n")
-    assert samtools_sn(str(p)) == {"reads_mapped": 1000.0, "error_rate": 0.0015}
+    p.write_text("# samtools stats\n" + FULL_SN + "FFQ\t1\n")
+    assert samtools_sn(str(p)) == FULL_VALUES
+
+
+def test_samtools_sn_rejects_a_file_cut_short(tmp_path: Path) -> None:
+    # Only the first SN lines survived, as after a disk-full write.
+    text = "# samtools stats\n" + "".join(FULL_SN.splitlines(keepends=True)[:2])
+    with pytest.raises(
+        ValueError, match=r"s\.txt: samtools stats summary has no 'reads duplicated:'"
+    ):
+        samtools_sn(_write(tmp_path, "s.txt", text))
+
+
+def test_samtools_sn_rejects_a_file_with_no_summary(tmp_path: Path) -> None:
+    with pytest.raises(ValueError, match=r"has no 'reads mapped:', 'reads duplicated:'"):
+        samtools_sn(_write(tmp_path, "s.txt", "# only comments\nFFQ\t1\n"))
+
+
+def test_samtools_sn_rejects_a_file_cut_inside_a_value(tmp_path: Path) -> None:
+    # 'insert size average:\t312.5' cut to '31' would otherwise read as 31.0.
+    text = FULL_SN.replace("312.5\n", "31")
+    with pytest.raises(ValueError, match=r"s\.txt:5: file ends inside an SN line"):
+        samtools_sn(_write(tmp_path, "s.txt", text))
+
+
+@pytest.mark.parametrize("text", [pytest.param("", id="empty"), pytest.param("\n", id="blank")])
+def test_samtools_sn_rejects_an_empty_file(tmp_path: Path, text: str) -> None:
+    # samtools stats writes its summary even for a BAM with no reads, so an
+    # empty stats file was cut short before anything reached the disk.
+    with pytest.raises(ValueError, match=r"s\.txt: empty file"):
+        samtools_sn(_write(tmp_path, "s.txt", text))
 
 
 def test_samtools_stats_fixture() -> None:
@@ -112,22 +158,22 @@ def test_samtools_stats_fixture() -> None:
 @pytest.mark.parametrize(
     ("text", "expected"),
     [
-        pytest.param("", {}, id="empty-file"),
-        pytest.param("# only comments\nFFQ\t1\n", {}, id="no-summary-numbers"),
+        pytest.param(FULL_SN.replace("\n", "\r\n"), FULL_VALUES, id="crlf"),
         pytest.param(
-            "SN\treads mapped:\t10\r\nSN\treads duplicated:\t2\t# c\r\n",
-            {"reads_mapped": 10.0, "reads_duplicated": 2.0},
-            id="crlf",
+            FULL_SN + "SN\tsome other field:\t5\n", FULL_VALUES, id="unlisted-key-ignored"
         ),
-        pytest.param("SN\tsome other field:\t5\n", {}, id="unlisted-key-ignored"),
-        pytest.param("SN\treads mapped:\t0\n", {"reads_mapped": 0.0}, id="zero"),
         pytest.param(
-            "SN\treads mapped:\t1\nSN\treads mapped:\t2\n",
-            {"reads_mapped": 2.0},
+            FULL_SN.replace("reads mapped:\t1000", "reads mapped:\t0"),
+            {**FULL_VALUES, "reads_mapped": 0.0},
+            id="zero",
+        ),
+        pytest.param(
+            FULL_SN + "SN\treads mapped:\t2\n",
+            {**FULL_VALUES, "reads_mapped": 2.0},
             id="last-value-wins",
         ),
-        pytest.param("SN\treads mapped:\t10", {"reads_mapped": 10.0}, id="no-trailing-newline"),
-        pytest.param("sn\treads mapped:\t10\n", {}, id="lower-case-tag-ignored"),
+        pytest.param(FULL_SN + "FFQ\t1", FULL_VALUES, id="no-trailing-newline"),
+        pytest.param(FULL_SN + "sn\treads mapped:\t10\n", FULL_VALUES, id="lower-case-tag-ignored"),
     ],
 )
 def test_samtools_sn_edge_cases(tmp_path: Path, text: str, expected: dict[str, float]) -> None:

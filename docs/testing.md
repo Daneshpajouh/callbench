@@ -22,18 +22,19 @@ lines each, under `tests/data/`; `tests/data/README.md` lists what each one
 exercises and which test uses it, and `test_fixtures.py` checks that each
 file still has that property.
 
-Coverage from the run on 2026-10-19 on the v1.0.2 tree
+Coverage from the run on 2026-10-19 on main after 1.0.2 (commit b19c35d)
 (`.venv/bin/python -m pytest -q --cov=workflow/scripts --cov=tools tests/unit`):
 382 passed; 602 statements, 1 missed, 99%. Every script is at 100% except
 `runlog.py` (66 of 67 statements, shown as 99%).
 
-At 1.0.2 the same suite was run from a fresh clone in a `python:3.12-slim` Linux
-container (`pip install -r requirements-dev.txt`, then the commands above):
-360 passed and 17 skipped (the tests that call bcftools, which the image does
-not have); the workflow layer gave 2 passed and 1 skipped (the dry run, which
-needs the full-size data). The first container run failed one test: the run
-manifest called `git`, which the slim image lacks. `runlog.git_state` now
-records no commit in that case, with a test.
+Just before the 1.0.2 tag (commit a41fe5b, 377 unit tests) the same suite was
+run from a fresh clone in a `python:3.12-slim` Linux container (`pip install -r
+requirements-dev.txt`, then the commands above): 360 passed and 17 skipped (the
+tests that call bcftools, which the image does not have); the workflow layer
+gave 2 passed and 1 skipped (the dry run, which needs the full-size data). The
+first container run failed one test: the run manifest called `git`, which the
+slim image lacks. `runlog.git_state` now records no commit in that case, with a
+test.
 
 Writing these tests found five bugs, each fixed in the same change: an empty
 stratum BED made `bcftools view -T` fail instead of counting zero; an empty

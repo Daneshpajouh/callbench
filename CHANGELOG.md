@@ -23,6 +23,9 @@ schema is MAJOR, a new caller, rule or report section is MINOR, a fix is PATCH.
 
 * Real-data steps name the host tools `make data` needs and the manual
   ClinVar download; the quick start names Python 3.12.
+* The validation report, caller memo and SOP name bcftools 1.24 and v1.0.2,
+  which produced the published tables; they still said 1.23.1 and v1.0.0.
+  Test counts in `docs/testing.md` name the commit they were measured on.
 
 ## [1.0.2] - 2026-10-19
 

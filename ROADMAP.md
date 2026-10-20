@@ -1,7 +1,8 @@
 # Roadmap
 
 Milestones after v1.0.0, in order. Each is written as user stories with
-acceptance criteria that can be checked by running something. Nothing listed
+acceptance criteria that can be checked by running something. Only the
+bcftools upgrade under M1 is done (released in v1.0.1); nothing else listed
 here exists in the code yet.
 
 ## M1 (v1.1.0): maintenance experiment, upgrade one caller

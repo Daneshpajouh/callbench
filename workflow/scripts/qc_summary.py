@@ -35,10 +35,16 @@ def samtools_sn(path: str) -> dict[str, float]:
         "reads properly paired:": "reads_properly_paired",
     }
     out: dict[str, float] = {}
+    has_content = False
     with open(path) as fh:
         for lineno, line in enumerate(fh, start=1):
+            has_content = has_content or bool(line.strip())
             if not line.startswith("SN\t"):
                 continue
+            # SN lines are never the last lines samtools stats writes, so one
+            # with no newline was cut inside its value.
+            if not line.endswith("\n"):
+                raise ValueError(f"{path}:{lineno}: file ends inside an SN line (cut short?)")
             f = line.rstrip("\n").split("\t")
             if len(f) < 3:
                 raise ValueError(
@@ -51,6 +57,16 @@ def samtools_sn(path: str) -> dict[str, float]:
                     raise ValueError(
                         f"{path}:{lineno}: {f[1]!r} is not numeric: {f[2]!r}"
                     ) from None
+    if not has_content:
+        raise ValueError(f"{path}: empty file")
+    # samtools stats writes every one of these, as 0 for an empty BAM, so a
+    # missing key means the file was cut short, not that the value is absent.
+    missing = [key for key, name in wanted.items() if name not in out]
+    if missing:
+        raise ValueError(
+            f"{path}: samtools stats summary has no {', '.join(repr(k) for k in missing)}"
+            " (file cut short?)"
+        )
     return out
 
 

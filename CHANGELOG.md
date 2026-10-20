@@ -8,6 +8,10 @@ schema is MAJOR, a new caller, rule or report section is MINOR, a fix is PATCH.
 
 ### Fixed
 
+* `qc_summary` stops with an error that names the file when a samtools stats
+  file was cut short: it is empty, lacks any of the five summary fields it
+  reads, or ends inside a summary line. Before, it wrote a QC row with empty
+  columns or a cut value (#1).
 * The normalise rules selected calls with `GT~"1"` before splitting
   multiallelic records, so a call using only the second ALT allele (`0/2`,
   `2/2`) was dropped, and a split `0/1` record left a `0/0` record behind.

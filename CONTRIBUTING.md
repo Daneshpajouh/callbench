@@ -89,4 +89,4 @@ Maintainers release in this order:
 2. Set `version` and `date-released` in `CITATION.cff`, and `version` in `.zenodo.json`.
 3. Merge to `main`, then tag the merge commit `vMAJOR.MINOR.PATCH` and push the tag.
 
-Pushing the tag runs `.github/workflows/release.yml`. It stops if the tag does not match the version in `CITATION.cff` or `.zenodo.json`, or if the changelog has no section for that version. Otherwise it creates the GitHub release.
+Pushing the tag runs `.github/workflows/release.yml`. It stops if the tag does not match the version in `CITATION.cff` or `.zenodo.json`, or if the changelog has no section for that version. It then runs the CI checks, builds the image and runs the integration test inside it. Only when all of these pass does it push the image and create the GitHub release.

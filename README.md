@@ -125,8 +125,9 @@ and as an Apptainer image on a Slurm compute node, 44 of 44 steps each time
 with the same accuracy table. The 1.0.2 code passed the same test in that
 image.
 
-The release workflow builds the image from the current Dockerfile (bcftools
-1.24) and publishes it when a version is tagged:
+When a version is tagged, the release workflow runs the CI checks, builds the
+image from the current Dockerfile (bcftools 1.24), runs the integration test
+inside it, and only then publishes the image and the GitHub release:
 `ghcr.io/daneshpajouh/callbench:v1.0.2`. The integration test ran inside that
 image in GitHub Actions on 2026-10-19 (`.github/workflows/image-test.yml`, 44 of
 44 steps, accuracy check passed). On a Slurm cluster with Apptainer, add

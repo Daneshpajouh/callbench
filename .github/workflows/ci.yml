@@ -4,6 +4,7 @@ on:
   push:
     branches: [main, develop]
   pull_request:
+  workflow_call:
 
 jobs:
   checks:
@@ -18,13 +19,39 @@ jobs:
         with:
           python-version: "3.12"
       - run: pip install -r requirements-dev.txt
+      # The genotype filter and stratum count tests run bcftools, bgzip and
+      # tabix and skip without them. Only the three tools go on PATH, not the
+      # environment's own Python.
+      - uses: mamba-org/setup-micromamba@v2
+        with:
+          environment-name: htstools
+          create-args: bcftools=1.24
+          condarc: |
+            channels:
+              - conda-forge
+              - bioconda
+      - name: Put bcftools, bgzip and tabix on PATH
+        shell: bash
+        run: |
+          mkdir -p "$HOME/htstools-bin"
+          for tool in bcftools bgzip tabix; do
+            ln -s "$MAMBA_ROOT_PREFIX/envs/htstools/bin/$tool" "$HOME/htstools-bin/$tool"
+          done
+          echo "$HOME/htstools-bin" >> "$GITHUB_PATH"
       - run: snakemake --lint
       - run: snakefmt --check workflow
       - run: ruff check . && ruff format --check .
       - run: mypy
       - run: shellcheck tools/*.sh
         if: runner.os == 'Linux'
-      - run: python -m pytest -q --cov=workflow/scripts --cov=tools tests/unit
+      - name: Unit tests; fail if a tool test skipped
+        shell: bash
+        run: |
+          python -m pytest -q -rs --cov=workflow/scripts --cov=tools tests/unit | tee pytest.log
+          if grep -q "not on PATH" pytest.log; then
+            echo "A test that needs bcftools, bgzip or tabix was skipped." >&2
+            exit 1
+          fi
       - run: python -m pytest -q -m workflow tests/workflow
 
   test-workflow:

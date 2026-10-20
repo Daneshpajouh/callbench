@@ -18,6 +18,14 @@ schema is MAJOR, a new caller, rule or report section is MINOR, a fix is PATCH.
 * Chunk names are four or more digits, so a scatter of 10,000 or more chunks
   still matches the calling rules.
 * `tools/check_accuracy.py` fails when a row is repeated in either table.
+* CI installs bcftools 1.24 with bgzip and tabix and fails if a test that
+  needs them skips; before, CI did not install them, so those tests could
+  skip unseen.
+* A tagged release publishes nothing until the CI checks pass and the
+  integration test passes inside the new image. Before, the release and the
+  image were published with no test.
+* The F1 figure has one legend outside the panels, which covered the tallest
+  bars, and each caller keeps its colour when it has no values in a panel.
 
 ### Documented
 
@@ -29,8 +37,6 @@ schema is MAJOR, a new caller, rule or report section is MINOR, a fix is PATCH.
 * The README shows the F1 figure for the v1.0.2 tables and holds the checks
   before and after a real run. The SOP, the code walk-through and the blank
   postmortem template are removed; they repeated the README and the code.
-* The F1 figure has one legend outside the panels, which covered the tallest
-  bars, and each caller keeps its colour when it has no values in a panel.
 
 ## [1.0.2] - 2026-10-19
 
